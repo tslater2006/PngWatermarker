@@ -9,16 +9,16 @@ namespace PngWatermarker.Watermarks
 {
     public class TextWatermark : Watermark
     {
-        public static const int TYPE = 01;
+        public const int TYPE = 01;
         private string text;
         public TextWatermark(String text)
         {
             this.text = text;
         }
 
-        public byte[] GetBytes() {
+        public override byte[] GetBytes() {
             MemoryStream ms = new MemoryStream();
-            ms.WriteByte(TextWatermark.TYPE);
+            ms.WriteByte(TYPE);
 
             byte[] textBytes = System.Text.Encoding.UTF8.GetBytes(text);
             byte[] textLength = BitConverter.GetBytes(textBytes.Length);

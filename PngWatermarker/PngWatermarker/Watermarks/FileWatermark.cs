@@ -8,7 +8,7 @@ namespace PngWatermarker.Watermarks
 {
     public class FileWatermark : Watermark
     {
-        public static const int TYPE = 02;
+        public const int TYPE = 02;
 
         public byte[] fileData;
         public string extension;
@@ -26,7 +26,7 @@ namespace PngWatermarker.Watermarks
         public override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
-            ms.WriteByte(FileWatermark.TYPE);
+            ms.WriteByte(TYPE);
 
             byte[] extBytes = System.Text.Encoding.UTF8.GetBytes(extension);
             byte[] extLength = BitConverter.GetBytes(extBytes.Length);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PngWatermarker;
+using PngWatermarker.Watermarks;
 namespace Demo
 {
     class Program
@@ -11,20 +12,12 @@ namespace Demo
         static void Main(string[] args)
         {
             PNGFile file = new PNGFile(@"Flower_Original.png");
-            PNGScrambler scrambler = new PNGScrambler(file, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
 
-            for (var x = 0; x < file.lines.Count ; x++)
-            {
-                for (var y = 0; y < file.lines[x].Length; y++)
-                {
-                    PNGPixel p = scrambler.GetPixel();
+            Console.WriteLine("This PNG can hold: " + file.EstimatedStorage + " bytes of data");
 
-                    p.Red = (byte)~p.Red;
-                    p.Green = (byte)~p.Green;
-                    p.Blue = (byte)~p.Blue;
-                }
-            }
-            file.SaveAs(@"Flower_New.png");
+            Watermarker.EmbedWatermark(file, new TextWatermark("test"), "password", "Flower_TextMark.png");
+            // Watermarker.EmbedWatermark(file, new BinaryWatermark(new byte[312713 -1 - 4]), "password", "Flower_BinMark.png");
+            Console.ReadKey();
         }
     }
 }

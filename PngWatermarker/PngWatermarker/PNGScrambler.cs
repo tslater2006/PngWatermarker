@@ -28,9 +28,14 @@ namespace PngWatermarker
             {
                 for (int y = 0; y < png.lines[x].Length; y++)
                 {
-                    PixelCoord pc = new PixelCoord() { x = x, y = y };
+                    /* skip 0,0 thru 0,10 - for the salt */
+                    if (x > 0 || y > 10)
+                    {
+                        PixelCoord pc = new PixelCoord() { x = x, y = y };
+
+                        coords.Add(pc);
+                    }
                     
-                    coords.Add(pc);
                 }
             }
         }
@@ -47,7 +52,9 @@ namespace PngWatermarker
                 int i = 0;
                 i++;
             }
+            Console.WriteLine("(" + pix.x + ", " + pix.y + ")");
             return png.lines[pix.x][pix.y];
+            
         }
 
     }

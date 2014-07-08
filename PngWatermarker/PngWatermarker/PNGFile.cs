@@ -12,10 +12,31 @@ namespace PngWatermarker
         public List<PNGPixel[]> lines = new List<PNGPixel[]>();
         public bool hasAlpha;
         public string originalFile;
+        public readonly ImageInfo ImgInfo;
+
+        public int EstimatedStorage
+        {
+            get
+            {
+                int pixels = lines.Count * lines[0].Length;
+                pixels -= 11; // can't count the pixels needed for salt storage
+
+                int totalBits = pixels * 6;
+                int totalBytes = totalBits / 8;
+
+                return totalBytes;
+            }
+        }
+
         public PNGFile(string path)
         {
             originalFile = path;
             var reader = FileHelper.CreatePngReader(path);
+            if (reader.ImgInfo.BitDepth != 8 || reader.ImgInfo.Channels < 3)
+            {
+                throw new ArgumentException("The PNG file must be an 24/32 bit PNG file, 8bit channels and RGB/A");
+            }
+            this.ImgInfo = reader.ImgInfo;
             reader.ShouldCloseStream = true;
             hasAlpha = reader.ImgInfo.Alpha;
             for (var x = 0; x < reader.ImgInfo.Rows; x++)
