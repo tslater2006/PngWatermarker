@@ -10,15 +10,21 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            PNGFile file = new PNGFile(@"C:\Users\User\Desktop\Flower_Original.png");
-            for (var x = 0; x < file.lines.Count; x++)
+            PNGFile file = new PNGFile(@"Flower_Original.png");
+            PNGScrambler scrambler = new PNGScrambler(file, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+
+            for (var x = 0; x < file.lines.Count ; x++)
             {
                 for (var y = 0; y < file.lines[x].Length; y++)
                 {
-                    file.lines[x][y].Red = (byte)~file.lines[x][y].Red;
+                    PNGPixel p = scrambler.GetPixel();
+
+                    p.Red = (byte)~p.Red;
+                    p.Green = (byte)~p.Green;
+                    p.Blue = (byte)~p.Blue;
                 }
             }
-            file.SaveAs(@"C:\Users\User\Desktop\Flower_New.png");
+            file.SaveAs(@"Flower_New.png");
         }
     }
 }

@@ -32,7 +32,7 @@ namespace PngWatermarker
                 {
                     byteCount++;
 
-                    if (byteCount > bytesPerPixel)
+                    if (byteCount > bytesPerPixel || y == (scanLine.Length -1))
                     {
                         line[pixelCount++] = curPixel;
 
@@ -88,7 +88,7 @@ namespace PngWatermarker
             reader.End();
         }
     }
-    public struct PNGPixel
+    public class PNGPixel
     {
         public byte Red;
         public byte Green;
