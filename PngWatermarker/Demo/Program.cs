@@ -16,7 +16,8 @@ namespace Demo
             Console.WriteLine("This PNG can hold: " + file.EstimatedStorage + " bytes of data");
 
             Watermarker.EmbedWatermark(file, new TextWatermark("test"), "password", "Flower_TextMark.png");
-            // Watermarker.EmbedWatermark(file, new BinaryWatermark(new byte[312713 -1 - 4]), "password", "Flower_BinMark.png");
+            Watermarker.EmbedWatermark(file, new BinaryWatermark(new byte[312713 -1 - 4]), "password", "Flower_BinMark.png");
+            
             Console.ReadKey();
         }
     }

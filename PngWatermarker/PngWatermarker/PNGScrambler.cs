@@ -29,12 +29,12 @@ namespace PngWatermarker
                 for (int y = 0; y < png.lines[x].Length; y++)
                 {
                     /* skip 0,0 thru 0,10 - for the salt */
-                    if (x > 0 || y > 10)
-                    {
+                    /*if (x > 0 || y > 10)
+                    {*/
                         PixelCoord pc = new PixelCoord() { x = x, y = y };
 
                         coords.Add(pc);
-                    }
+                    /*}*/
                     
                 }
             }
@@ -52,7 +52,7 @@ namespace PngWatermarker
                 int i = 0;
                 i++;
             }
-            Console.WriteLine("(" + pix.x + ", " + pix.y + ")");
+            //Console.WriteLine("(" + pix.x + ", " + pix.y + ")");
             return png.lines[pix.x][pix.y];
             
         }

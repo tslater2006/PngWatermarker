@@ -19,7 +19,7 @@ namespace PngWatermarker
             get
             {
                 int pixels = lines.Count * lines[0].Length;
-                pixels -= 11; // can't count the pixels needed for salt storage
+                //pixels -= 11; // can't count the pixels needed for salt storage
 
                 int totalBits = pixels * 6;
                 int totalBytes = totalBits / 8;
