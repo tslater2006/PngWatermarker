@@ -19,11 +19,18 @@ namespace PngWatermarker
             
             this.png = png;
             bytes = new Rfc2898DeriveBytes(key, salt, 10);
+            
             initCoords();
         }
 
+        public void Reset()
+        {
+            bytes.Reset();
+            initCoords();
+        }
         private void initCoords()
         {
+            coords.Clear();
             for (int x = 0; x < png.lines.Count;x++ )
             {
                 for (int y = 0; y < png.lines[x].Length; y++)

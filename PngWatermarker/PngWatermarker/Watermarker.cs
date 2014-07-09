@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.IO;
 
 namespace PngWatermarker
 {
@@ -68,6 +69,81 @@ namespace PngWatermarker
             }
 
             return bits;
+        }
+
+        private static byte[] BitsToBytes(List<byte> bits)
+        {
+            MemoryStream ms = new MemoryStream();
+            for (var x = 0; x < bits.Count ; x += 4)
+            {
+                if (bits.Count - x >= 4){
+
+                    byte b = (byte)(bits[x] << 6);
+                    b |= (byte)(bits[x + 1] << 4);
+                    b |= (byte)(bits[x + 2] << 2);
+                    b |= (byte)(bits[x + 3]);
+
+
+                    ms.WriteByte(b);
+                }
+            }
+
+            return ms.ToArray();
+        }
+
+        private static byte[] ReadBytes(PNGFile file, PNGScrambler scrambler, int count, int skip = 0)
+        {
+            scrambler.Reset();
+
+            List<byte> bits = new List<byte>();
+            int numBitsToRead = count * 8;
+            int pixelsToRead = numBitsToRead / 6 + ((numBitsToRead / 6.0)%1.0 != 0 ? 1 : 0) ;
+
+            int pixelsToSkip = (skip * 8) / 6;
+            //int bitPairsToThrowaway = pixelsToSkip == 0 ? 0 : (6 - ((skip * 8) % 6)) / 2;
+            int bitPairsToThrowaway = ((skip * 8) % 6) / 2;
+
+            if (bitPairsToThrowaway == 2) { pixelsToRead++; }
+
+            for (var x = 0; x < pixelsToSkip; x++)
+            {
+                scrambler.GetPixel();
+            }
+
+            for (var x = 0; x < pixelsToRead; x++)
+            {
+                PNGPixel p = scrambler.GetPixel();
+                bits.Add((byte)(p.Red & 0x03));
+                bits.Add((byte)(p.Green & 0x03));
+                bits.Add((byte)(p.Blue & 0x03));
+            }
+
+            for (var x = 0; x < bitPairsToThrowaway; x++)
+            {
+                bits.RemoveAt(0);
+            }
+
+           return BitsToBytes(bits);
+        }
+
+        public static Watermark ExtractWatermark(PNGFile file, string password)
+        {
+            Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
+
+            PNGScrambler scrambler = new PNGScrambler(file, bytes.GetBytes(16), bytes.GetBytes(8));
+
+            byte[] type = ReadBytes(file, scrambler, 1);
+
+            var waterType = Watermark.GetWatermarkType(type[0]);
+
+            byte[] dword = ReadBytes(file, scrambler, 4, 1);
+            int length = BitConverter.ToInt32(dword, 0);
+
+            byte[] data = ReadBytes(file, scrambler, length, 5);
+
+
+            return (Watermark)waterType.GetMethod("LoadFromBytes").Invoke(null,new object[]{data});
+
         }
     }
 }

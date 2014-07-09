@@ -27,5 +27,11 @@ namespace PngWatermarker.Watermarks
 
             return ms.ToArray();
         }
+
+        public static TextWatermark LoadFromBytes(byte[] data)
+        {
+            string contents = System.Text.Encoding.UTF8.GetString(data);
+            return new TextWatermark(contents);
+        }
     }
 }

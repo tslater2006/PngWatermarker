@@ -30,10 +30,18 @@ namespace PngWatermarker.Watermarks
 
             byte[] extBytes = System.Text.Encoding.UTF8.GetBytes(extension);
             byte[] extLength = BitConverter.GetBytes(extBytes.Length);
-            ms.Write(extLength, 0, extLength.Length);
-            ms.Write(extBytes, 0, extBytes.Length);
+            
 
             byte[] fileLength = BitConverter.GetBytes(fileData.Length);
+
+            int totalLength = extLength.Length + extBytes.Length + fileLength.Length + fileData.Length;
+            byte[] totalLengthBytes = BitConverter.GetBytes(totalLength); 
+
+            ms.Write(totalLengthBytes, 0, totalLengthBytes.Length);
+
+            ms.Write(extLength, 0, extLength.Length);
+            ms.Write(extBytes, 0, extBytes.Length);
+            
             ms.Write(fileLength, 0, fileLength.Length);
             ms.Write(fileData, 0, fileData.Length);
 
