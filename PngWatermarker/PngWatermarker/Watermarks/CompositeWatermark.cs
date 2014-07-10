@@ -15,7 +15,7 @@ namespace PngWatermarker.Watermarks
         {
 
         }
-        public override byte GetMarkType()
+        internal override byte GetMarkType()
         {
             return TYPE;
         }
@@ -41,7 +41,7 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        public override bool LoadFromBytes(byte[] data)
+        internal override bool LoadFromBytes(byte[] data)
         {
             MemoryStream ms = new MemoryStream(data);
             byte[] type = new byte[1];

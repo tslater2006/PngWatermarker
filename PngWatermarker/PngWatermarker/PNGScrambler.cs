@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 namespace PngWatermarker
 {
-    /* PNGScrambler provides a mechanism for getting random pixels to embed the watermark, as opposed to embedding from top-left to bottom-right. */
-    public class PNGScrambler
+    /// <summary>
+    /// PNGScrambler provides a mechanism for randomizing the pixels used to hold the watermark.
+    /// </summary> 
+    class PNGScrambler
     {
         PNGFile png;
         Rfc2898DeriveBytes bytes;
@@ -54,11 +56,6 @@ namespace PngWatermarker
 
             coords.RemoveAt(offset);
 
-            if (png.lines[pix.x][pix.y] == null)
-            {
-                int i = 0;
-                i++;
-            }
             //Console.WriteLine("(" + pix.x + ", " + pix.y + ")");
             return png.lines[pix.x][pix.y];
             

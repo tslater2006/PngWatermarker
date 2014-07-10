@@ -30,7 +30,7 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        public override bool LoadFromBytes(byte[] data)
+        internal override bool LoadFromBytes(byte[] data)
         {
             string contents = System.Text.Encoding.UTF8.GetString(data);
             this.Text = contents;
@@ -38,7 +38,7 @@ namespace PngWatermarker.Watermarks
             return true;
         }
 
-        public override byte GetMarkType()
+        internal override byte GetMarkType()
         {
             return TYPE;
         }

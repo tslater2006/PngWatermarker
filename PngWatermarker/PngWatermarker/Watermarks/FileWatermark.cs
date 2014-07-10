@@ -26,14 +26,7 @@ namespace PngWatermarker.Watermarks
         {
 
         }
-
-        private FileWatermark(byte[] data, string ext)
-        {
-            this.fileData = data;
-            this.extension = ext;
-        }
-
-        public override bool LoadFromBytes(byte[] data)
+        internal override bool LoadFromBytes(byte[] data)
         {
             int extLength = BitConverter.ToInt32(data, 0);
             string extension = System.Text.Encoding.UTF8.GetString(data, 4, extLength);
@@ -83,7 +76,7 @@ namespace PngWatermarker.Watermarks
 
         }
 
-        public override byte GetMarkType()
+        internal override byte GetMarkType()
         {
             return TYPE;
         }

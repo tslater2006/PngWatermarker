@@ -6,19 +6,40 @@ using System.Threading.Tasks;
 using System.IO;
 namespace PngWatermarker.Watermarks
 {
+    /// <summary>
+    /// Watermark that stores only binary data.
+    /// </summary>
     public class BinaryWatermark : Watermark
     {
+
+        /// <summary>
+        /// Watermark TYPE, used by the watermarking engine at extraction time.
+        /// </summary>
         public const int TYPE = 03;
 
+        /// <summary>
+        /// Data that this watermark holds.
+        /// </summary>
         public byte[] data;
         
+        /// <summary>
+        /// Constructor to be used when embedding a watermark.
+        /// </summary>
+        /// <param name="data"></param>
         public BinaryWatermark(byte[] data)
         {
             this.data = data;
         }
 
+        /// <summary>
+        /// Constructor to be used when extracting a watermark of this type.
+        /// </summary>
         public BinaryWatermark() { }
 
+        /// <summary>
+        /// Converts this watermark into a byte array.
+        /// </summary>
+        /// <returns>Byte array </returns>
         public override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
@@ -31,13 +52,13 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        public override bool LoadFromBytes(byte[] data)
+        internal override bool LoadFromBytes(byte[] data)
         {
             this.data = data;
             return true;
         }
 
-        public override byte GetMarkType()
+        internal override byte GetMarkType()
         {
             return TYPE;
         }

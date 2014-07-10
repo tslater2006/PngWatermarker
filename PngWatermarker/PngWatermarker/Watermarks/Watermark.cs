@@ -9,7 +9,7 @@ namespace PngWatermarker.Watermarks
     public abstract class Watermark
     {
         public abstract byte[] GetBytes();
-        public abstract bool LoadFromBytes(byte[] data);
-        public abstract byte GetMarkType();
+        internal abstract bool LoadFromBytes(byte[] data);
+        internal abstract byte GetMarkType();
     }
 }

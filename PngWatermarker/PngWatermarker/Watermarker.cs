@@ -9,8 +9,18 @@ using System.IO;
 
 namespace PngWatermarker
 {
+    /// <summary>
+    /// Main watermarking class.
+    /// </summary>
     public class Watermarker
     {
+        /// <summary>
+        /// Embeds a given watermark into a PNG file and saves the result.
+        /// </summary>
+        /// <param name="file">PNGFile to use in the watermarking process.</param>
+        /// <param name="mark">The watermark to embed.</param>
+        /// <param name="password">A password for the embedding process</param>
+        /// <param name="outputPath">Location of the saved file.</param>
         public static void EmbedWatermark(PNGFile file, Watermark mark, string password, string outputPath)
         {
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
@@ -126,6 +136,13 @@ namespace PngWatermarker
            return BitsToBytes(bits);
         }
 
+        /// <summary>
+        /// Extracts a stored watermark from a PNGFile.
+        /// </summary>
+        /// <param name="file">PNGFile that contains the watermark.</param>
+        /// <param name="mark">An empty watermark that will be populated.</param>
+        /// <param name="password">Password that was used to embed the watermark.</param>
+        /// <returns></returns>
         public static bool ExtractWatermark(PNGFile file, Watermark mark, string password)
         {
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);

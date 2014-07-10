@@ -7,13 +7,34 @@ using Hjg.Pngcs;
 using Hjg.Pngcs.Chunks;
 namespace PngWatermarker
 {
+    /// <summary>
+    /// Loads a PNG file to memory for use with Watermarker
+    /// </summary>
     public class PNGFile
     {
+        /// <summary>
+        /// The lines of a PNG file, each line is an array of PNGPixel
+        /// </summary>
         public List<PNGPixel[]> lines = new List<PNGPixel[]>();
+
+        /// <summary>
+        /// Wether or not the image has an alpha channel.
+        /// </summary>
         public bool hasAlpha;
+
+        /// <summary>
+        /// Stores the path to the original file.
+        /// </summary>
         public string originalFile;
+
+        /// <summary>
+        /// Basic PNG Image Inforamtion.
+        /// </summary>
         public readonly ImageInfo ImgInfo;
 
+        /// <summary>
+        /// Total storage capacity of the PNG file.
+        /// </summary>
         public int EstimatedStorage
         {
             get
@@ -27,7 +48,11 @@ namespace PngWatermarker
                 return totalBytes - 5; // subtract 5 bytes for watermark header
             }
         }
-
+        
+        /// <summary>
+        /// Main constructor for PNGFile.
+        /// </summary>
+        /// <param name="path">Path to the PNG file to be loaded.</param>
         public PNGFile(string path)
         {
             originalFile = path;
@@ -82,6 +107,10 @@ namespace PngWatermarker
             reader = null;
         }
 
+        /// <summary>
+        /// Saves the PNGFile to disk.
+        /// </summary>
+        /// <param name="path">Output path for the PNGFile.</param>
         public void SaveAs(string path)
         {
             PngReader reader = FileHelper.CreatePngReader(originalFile);
@@ -109,6 +138,14 @@ namespace PngWatermarker
             reader.End();
         }
     }
+
+    /// <summary>
+    /// Basic representation of a Pixel
+    /// </summary>
+    /// <remarks>
+    /// Must be a Class and not a Struct so that we can pass by reference and not copies.
+    /// This is required for the PNGScrambler to work properly.
+    /// </remarks>
     public class PNGPixel
     {
         public byte Red;

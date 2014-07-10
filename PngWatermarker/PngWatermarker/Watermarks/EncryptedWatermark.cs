@@ -65,11 +65,11 @@ namespace PngWatermarker.Watermarks
             this.algo = algo;
         }
 
-        public override byte GetMarkType()
+        internal override byte GetMarkType()
         {
             return TYPE;
         }
-        public override bool LoadFromBytes(byte[] data)
+        internal override bool LoadFromBytes(byte[] data)
         {
             int saltLength = BitConverter.ToInt32(data, 0);
             byte[] salt = new byte[saltLength];

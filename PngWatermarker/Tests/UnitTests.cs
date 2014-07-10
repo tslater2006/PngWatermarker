@@ -163,7 +163,7 @@ namespace Tests
             Expect(((TextWatermark)marks[0]).Text, Is.EqualTo("This is mark #1"));
             Expect(((TextWatermark)marks[1]).Text, Is.EqualTo("This is mark #2"));
         }
-
+        [Category("QuickTests")]
         [Test]
         public void TestEncryptedWatermark()
         {
@@ -179,7 +179,6 @@ namespace Tests
 
             Assert.IsInstanceOf<TextWatermark>(extract.DecryptedMark);
             Expect(((TextWatermark)extract.DecryptedMark).Text, Is.EqualTo("This should be encrypted"));
-
         }
 
         [Test]
