@@ -182,6 +182,36 @@ namespace Tests
 
         }
 
+        [Test]
+        public void TestSeperateMarks()
+        {
+            // This will only pass if the marks do not overlap on any pixels.
+
+            TextWatermark text1 = new TextWatermark("text1");
+            TextWatermark text2 = new TextWatermark("text2");
+
+            Watermarker.EmbedWatermark(file, text1, "password", "results/Embed1.png");
+
+            file = new PNGFile("results/Embed1.png");
+
+            Watermarker.EmbedWatermark(file, text2, "foobar", "results/Embed2Marks.png");
+
+            TextWatermark extract1 = new TextWatermark();
+            TextWatermark extract2 = new TextWatermark();
+
+            PNGFile file2 = new PNGFile("results/Embed2Marks.png");
+
+            bool success1 = Watermarker.ExtractWatermark(file2, extract1, "password");
+
+            bool success2 = Watermarker.ExtractWatermark(file2, extract2, "foobar");
+
+            Expect(success1 && success2, Is.EqualTo(true));
+
+            Expect(extract1.Text, Is.EqualTo("text1"));
+            Expect(extract2.Text, Is.EqualTo("text2"));
+
+        }
+
         private void StoreTooMuch()
         {
             int size = file.EstimatedStorage + 1;
