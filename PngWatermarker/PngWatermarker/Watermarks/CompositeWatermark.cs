@@ -77,6 +77,15 @@ namespace PngWatermarker.Watermarks
             return true;
 
         }
+        public int GetWatermarkCount()
+        {
+            return watermarks.Count;
+        }
+
+        public Watermark[] GetWatermarks()
+        {
+            return watermarks.ToArray<Watermark>();
+        }
 
         public void AddWatermark(Watermark mark)
         {

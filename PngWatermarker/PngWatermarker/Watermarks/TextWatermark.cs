@@ -10,10 +10,10 @@ namespace PngWatermarker.Watermarks
     public class TextWatermark : Watermark
     {
         public const byte TYPE = 01;
-        private string text;
+        public string Text;
         public TextWatermark(String text)
         {
-            this.text = text;
+            this.Text = text;
         }
 
         public TextWatermark() { }
@@ -22,7 +22,7 @@ namespace PngWatermarker.Watermarks
             MemoryStream ms = new MemoryStream();
             ms.WriteByte(TYPE);
 
-            byte[] textBytes = System.Text.Encoding.UTF8.GetBytes(text);
+            byte[] textBytes = System.Text.Encoding.UTF8.GetBytes(Text);
             byte[] textLength = BitConverter.GetBytes(textBytes.Length);
             ms.Write(textLength, 0, textLength.Length);
             ms.Write(textBytes,0, textBytes.Length);
@@ -33,7 +33,7 @@ namespace PngWatermarker.Watermarks
         public override bool LoadFromBytes(byte[] data)
         {
             string contents = System.Text.Encoding.UTF8.GetString(data);
-            this.text = contents;
+            this.Text = contents;
 
             return true;
         }

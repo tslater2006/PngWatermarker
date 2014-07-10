@@ -24,7 +24,7 @@ namespace PngWatermarker
                 int totalBits = pixels * 6;
                 int totalBytes = totalBits / 8;
 
-                return totalBytes;
+                return totalBytes - 5; // subtract 5 bytes for watermark header
             }
         }
 
