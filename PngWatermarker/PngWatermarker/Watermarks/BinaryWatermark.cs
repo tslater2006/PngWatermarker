@@ -17,6 +17,7 @@ namespace PngWatermarker.Watermarks
             this.data = data;
         }
 
+        public BinaryWatermark() { }
 
         public override byte[] GetBytes()
         {
@@ -28,6 +29,17 @@ namespace PngWatermarker.Watermarks
             ms.Write(data, 0, data.Length);
 
             return ms.ToArray();
+        }
+
+        public override bool LoadFromBytes(byte[] data)
+        {
+            this.data = data;
+            return true;
+        }
+
+        public override byte GetMarkType()
+        {
+            return TYPE;
         }
     }
 }

@@ -9,12 +9,14 @@ namespace PngWatermarker.Watermarks
 {
     public class TextWatermark : Watermark
     {
-        public const int TYPE = 01;
+        public const byte TYPE = 01;
         private string text;
         public TextWatermark(String text)
         {
             this.text = text;
         }
+
+        public TextWatermark() { }
 
         public override byte[] GetBytes() {
             MemoryStream ms = new MemoryStream();
@@ -28,10 +30,17 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        public static TextWatermark LoadFromBytes(byte[] data)
+        public override bool LoadFromBytes(byte[] data)
         {
             string contents = System.Text.Encoding.UTF8.GetString(data);
-            return new TextWatermark(contents);
+            this.text = contents;
+
+            return true;
+        }
+
+        public override byte GetMarkType()
+        {
+            return TYPE;
         }
     }
 }

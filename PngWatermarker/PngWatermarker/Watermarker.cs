@@ -126,7 +126,7 @@ namespace PngWatermarker
            return BitsToBytes(bits);
         }
 
-        public static Watermark ExtractWatermark(PNGFile file, string password)
+        public static bool ExtractWatermark(PNGFile file, Watermark mark, string password)
         {
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
 
@@ -134,15 +134,15 @@ namespace PngWatermarker
 
             byte[] type = ReadBytes(file, scrambler, 1);
 
-            var waterType = Watermark.GetWatermarkType(type[0]);
+            if (type[0] != mark.GetMarkType()) { return false; }
 
             byte[] dword = ReadBytes(file, scrambler, 4, 1);
             int length = BitConverter.ToInt32(dword, 0);
 
             byte[] data = ReadBytes(file, scrambler, length, 5);
 
-
-            return (Watermark)waterType.GetMethod("LoadFromBytes").Invoke(null,new object[]{data});
+            mark.LoadFromBytes(data);
+            return true;
 
         }
     }

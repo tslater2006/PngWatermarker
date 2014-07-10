@@ -44,6 +44,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Watermarker.cs" />
     <Compile Include="Watermarks\BinaryWatermark.cs" />
+    <Compile Include="Watermarks\CompositeWatermark.cs" />
+    <Compile Include="Watermarks\EncryptedWatermark.cs" />
     <Compile Include="Watermarks\FileWatermark.cs" />
     <Compile Include="Watermarks\TextWatermark.cs" />
     <Compile Include="Watermarks\Watermark.cs" />

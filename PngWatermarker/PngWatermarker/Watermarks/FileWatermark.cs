@@ -22,7 +22,31 @@ namespace PngWatermarker.Watermarks
             }
         }
 
+        public FileWatermark()
+        {
 
+        }
+
+        private FileWatermark(byte[] data, string ext)
+        {
+            this.fileData = data;
+            this.extension = ext;
+        }
+
+        public override bool LoadFromBytes(byte[] data)
+        {
+            int extLength = BitConverter.ToInt32(data, 0);
+            string extension = System.Text.Encoding.UTF8.GetString(data, 4, extLength);
+
+            int fileLength = BitConverter.ToInt32(data, 4 + extLength);
+            byte[] fileData = new byte[fileLength];
+            Array.Copy(data, 4 + extLength + 4, fileData, 0, fileLength);
+
+            this.fileData = fileData;
+            this.extension = extension;
+
+            return true;
+        }
         public override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
@@ -48,5 +72,20 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
+        public void Save(string output)
+        {
+            if (File.Exists(output))
+            {
+                File.Delete(output);
+            }
+
+            File.WriteAllBytes(output + extension, fileData);
+
+        }
+
+        public override byte GetMarkType()
+        {
+            return TYPE;
+        }
     }
 }
