@@ -88,6 +88,87 @@
 </li>
 </ul><h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<blockquote>
+<p>Original Image:
+<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+
+<h3>
+<a name="text-watermark" class="anchor" href="#text-watermark"><span class="octicon octicon-link"></span></a>Text Watermark</h3>
+</blockquote>
+
+<div class="highlight highlight-C#"><pre><span class="n">PNGFile</span> <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOriginal.png"</span><span class="p">);</span>
+<span class="n">TextWatermark</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">(</span><span class="s">"This is a text based watermark"</span><span class="p">);</span>
+
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">mark</span><span class="p">,</span><span class="s">"password"</span><span class="p">,</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+
+<span class="c1">//Extraction</span>
+
+<span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+<span class="n">TextWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">();</span>
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">extract</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
+
+</pre></div>
+
+<blockquote>
+<p>Resulting Image:
+<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+</blockquote>
+
+<h3>
+<a name="composite-watermark" class="anchor" href="#composite-watermark"><span class="octicon octicon-link"></span></a>Composite Watermark</h3>
+
+<div class="highlight highlight-C#"><pre><span class="n">PNGFile</span> <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOriginal.png"</span><span class="p">);</span>
+
+<span class="n">CompositeWatermark</span> <span class="n">comp</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CompositeWatermark</span><span class="p">();</span>
+<span class="n">FileWatermark</span> <span class="n">fileMark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FileWatermark</span><span class="p">(</span><span class="s">"MyFile.txt"</span><span class="p">);</span>
+<span class="n">BinaryWatermark</span> <span class="n">binMark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">BinaryWatermark</span><span class="p">(</span><span class="k">new</span> <span class="kt">byte</span><span class="p">[]{</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">});</span>
+
+<span class="n">comp</span><span class="p">.</span><span class="n">AddWatermark</span><span class="p">(</span><span class="n">fileMark</span><span class="p">);</span>
+<span class="n">comp</span><span class="p">.</span><span class="n">AddWatermark</span><span class="p">(</span><span class="n">binMark</span><span class="p">);</span>
+
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">comp</span><span class="p">,</span><span class="s">"password"</span><span class="p">,</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+
+<span class="c1">//Extraction</span>
+<span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+
+<span class="n">CompositeWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CompositeWatermark</span><span class="p">();</span>
+
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span><span class="n">extract</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
+<span class="n">Watermark</span><span class="p">[]</span> <span class="n">marks</span> <span class="p">=</span> <span class="n">extract</span><span class="p">.</span><span class="n">GetWatermarks</span><span class="p">();</span>
+
+</pre></div>
+
+<blockquote>
+<p>Resulting Image:
+<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+</blockquote>
+
+<h3>
+<a name="encrypted-watermark" class="anchor" href="#encrypted-watermark"><span class="octicon octicon-link"></span></a>Encrypted Watermark</h3>
+
+<div class="highlight highlight-C#"><pre><span class="n">PNGFile</span> <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOriginal.png"</span><span class="p">);</span>
+<span class="n">RijndaelManaged</span> <span class="n">aes</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RijndaelManaged</span><span class="p">();</span>
+<span class="n">aes</span><span class="p">.</span><span class="n">Padding</span> <span class="p">=</span> <span class="n">PaddingMode</span><span class="p">.</span><span class="n">Zeroes</span><span class="p">;</span>
+
+<span class="n">TextWatermark</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">(</span><span class="s">"This should be encrypted"</span><span class="p">);</span>
+<span class="n">EncryptedWatermark</span> <span class="n">encrypted</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">mark</span><span class="p">,</span> <span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
+
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">encrypted</span><span class="p">,</span> <span class="s">"password"</span><span class="p">,</span> <span class="s">"MyOutput.png"</span><span class="p">);</span>
+
+<span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
+<span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="n">extract</span><span class="p">,</span> <span class="s">"password"</span><span class="p">);</span>
+
+<span class="n">Watermark</span> <span class="n">decrypted</span> <span class="p">=</span> <span class="n">extract</span><span class="p">.</span><span class="n">DecryptedMark</span><span class="p">;</span>
+
+</pre></div>
+
+<blockquote>
+<p>Result:
+<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+</blockquote>
       </section>
     </div>
 
