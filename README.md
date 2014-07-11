@@ -28,3 +28,60 @@ PngWatermarker is a .NET 4.5+ library for the embedding and extraction of invisi
  * Encryption is performed by any SymmetricAlgorithm subclass.
 
 ##Examples
+
+###Text Watermark
+
+```C#
+PNGFile file = new PNGFile("MyOriginal.png");
+TextWatermark mark = new TextWatermark("This is a text based watermark");
+
+Watermarker.EmbedWatermark(file,mark,"password","MyOutput.png");
+
+//Extraction
+
+file = new PNGFile("MyOutput.png");
+TextWatermark extract = (TextWatermark)Watermarker.ExtractWatermark(file,"password");
+
+```
+
+###Composite Watermark
+
+```C#
+PNGFile file = new PNGFile("MyOriginal.png");
+
+CompositeWatermark comp = new CompositeWatermark();
+FileWatermark fileMark = new FileWatermark("MyFile.txt");
+BinaryWatermark binMark = new BinaryWatermark(new byte[]{1,2,3,4});
+
+comp.AddWatermark(fileMark);
+comp.AddWatermark(binMark);
+
+Watermarker.EmbedWatermark(file,comp,"password","MyOutput.png");
+
+//Extraction
+PNGFile file2 = new PNGFile("MyOutput.png");
+
+CompositeWatermark extract = (CompositeWatermark)Watermarker.ExtractWatermark(file2,"password");
+Watermark[] marks = extract.GetWatermarks();
+
+```
+
+###Encrypted Watermark
+```C#
+PNGFile file = new PNGFile("MyOriginal.png");
+RijndaelManaged aes = new RijndaelManaged();
+aes.Padding = PaddingMode.Zeroes;
+
+TextWatermark mark = new TextWatermark("This should be encrypted");
+EncryptedWatermark encrypted = new EncryptedWatermark(mark, aes, "super-secret");
+
+Watermarker.EmbedWatermark(file, encrypted, "password", "MyOutput.png");
+
+Watermarker.DefaultCrypto = aes;
+PNGFile file2 = new PNGFile("MyOutput.png");
+
+EncryptedWatermark extract = Watermarker.ExtractWatermark(file2, "password");
+extract.Decrypt("super-secret");
+
+Watermark decrypted = extract.DecryptedMark;
+```
