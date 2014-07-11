@@ -89,13 +89,8 @@
 </ul><h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
-<blockquote>
-<p>Original Image:
-<img src="images/Flower_Original.png" alt="asdf"></p>
-
 <h3>
 <a name="text-watermark" class="anchor" href="#text-watermark"><span class="octicon octicon-link"></span></a>Text Watermark</h3>
-</blockquote>
 
 <div class="highlight highlight-C#"><pre><span class="n">PNGFile</span> <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOriginal.png"</span><span class="p">);</span>
 <span class="n">TextWatermark</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">(</span><span class="s">"This is a text based watermark"</span><span class="p">);</span>
@@ -105,15 +100,9 @@
 <span class="c1">//Extraction</span>
 
 <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
-<span class="n">TextWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">();</span>
-<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">extract</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
+<span class="n">TextWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="p">(</span><span class="n">TextWatermark</span><span class="p">)</span><span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
 
 </pre></div>
-
-<blockquote>
-<p>Resulting Image:
-<img src="images/TextMark.png" alt="asdf"></p>
-</blockquote>
 
 <h3>
 <a name="composite-watermark" class="anchor" href="#composite-watermark"><span class="octicon octicon-link"></span></a>Composite Watermark</h3>
@@ -132,17 +121,10 @@
 <span class="c1">//Extraction</span>
 <span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
 
-<span class="n">CompositeWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CompositeWatermark</span><span class="p">();</span>
-
-<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span><span class="n">extract</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
+<span class="n">CompositeWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="p">(</span><span class="n">CompositeWatermark</span><span class="p">)</span><span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span><span class="s">"password"</span><span class="p">);</span>
 <span class="n">Watermark</span><span class="p">[]</span> <span class="n">marks</span> <span class="p">=</span> <span class="n">extract</span><span class="p">.</span><span class="n">GetWatermarks</span><span class="p">();</span>
 
 </pre></div>
-
-<blockquote>
-<p>Resulting Image:
-<img src="images/Flower_Composite.png" alt="asdf"></p>
-</blockquote>
 
 <h3>
 <a name="encrypted-watermark" class="anchor" href="#encrypted-watermark"><span class="octicon octicon-link"></span></a>Encrypted Watermark</h3>
@@ -156,20 +138,24 @@
 
 <span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">encrypted</span><span class="p">,</span> <span class="s">"password"</span><span class="p">,</span> <span class="s">"MyOutput.png"</span><span class="p">);</span>
 
-<span class="c1">//Extraction</span>
+<span class="n">Watermarker</span><span class="p">.</span><span class="n">DefaultCrypto</span> <span class="p">=</span> <span class="n">aes</span><span class="p">;</span>
 <span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
-<span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
 
-<span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="n">extract</span><span class="p">,</span> <span class="s">"password"</span><span class="p">);</span>
+<span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="s">"password"</span><span class="p">);</span>
+<span class="n">extract</span><span class="p">.</span><span class="n">Decrypt</span><span class="p">(</span><span class="s">"super-secret"</span><span class="p">);</span>
 
 <span class="n">Watermark</span> <span class="n">decrypted</span> <span class="p">=</span> <span class="n">extract</span><span class="p">.</span><span class="n">DecryptedMark</span><span class="p">;</span>
-
 </pre></div>
 
-<blockquote>
-<p>Resulting Image:
-<img src="images/Flower_Crypted.png" alt="asdf"></p>
-</blockquote>
+<h2>
+<a name="original-file" class="anchor" href="#original-file"><span class="octicon octicon-link"></span></a>Original File</h2>
+
+<p><img src="images/Flower_Original.png" alt="Original File"></p>
+
+<h2>
+<a name="file-holding-a-watermark" class="anchor" href="#file-holding-a-watermark"><span class="octicon octicon-link"></span></a>File holding a watermark</h2>
+
+<p><img src="images/TextMark.png" alt="Watermarked File"></p>
       </section>
     </div>
 
