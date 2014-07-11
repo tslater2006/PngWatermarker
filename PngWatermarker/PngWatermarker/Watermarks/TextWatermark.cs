@@ -7,18 +7,24 @@ using System.IO;
 
 namespace PngWatermarker.Watermarks
 {
+    /// <summary>
+    /// A Textual Watermark.
+    /// </summary>
     public class TextWatermark : Watermark
     {
         public const byte TYPE = 01;
         public string Text;
+
+        /// <summary>
+        /// Constructor for basic Text Watermark
+        /// </summary>
+        /// <param name="text">The string this watermark should hold.</param>
         public TextWatermark(String text)
         {
             this.Text = text;
         }
 
-        public TextWatermark() { }
-
-        public override byte[] GetBytes() {
+        internal override byte[] GetBytes() {
             MemoryStream ms = new MemoryStream();
             ms.WriteByte(TYPE);
 
@@ -30,12 +36,12 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        internal override bool LoadFromBytes(byte[] data)
+        internal static TextWatermark LoadFromBytes(byte[] data)
         {
             string contents = System.Text.Encoding.UTF8.GetString(data);
-            this.Text = contents;
 
-            return true;
+            return new TextWatermark(contents);
+
         }
 
         internal override byte GetMarkType()

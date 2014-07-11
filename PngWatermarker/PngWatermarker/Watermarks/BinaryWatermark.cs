@@ -32,15 +32,10 @@ namespace PngWatermarker.Watermarks
         }
 
         /// <summary>
-        /// Constructor to be used when extracting a watermark of this type.
-        /// </summary>
-        public BinaryWatermark() { }
-
-        /// <summary>
         /// Converts this watermark into a byte array.
         /// </summary>
         /// <returns>Byte array </returns>
-        public override byte[] GetBytes()
+        internal override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
             ms.WriteByte(TYPE);
@@ -52,10 +47,9 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        internal override bool LoadFromBytes(byte[] data)
+        internal static BinaryWatermark LoadFromBytes(byte[] data)
         {
-            this.data = data;
-            return true;
+            return new BinaryWatermark(data);
         }
 
         internal override byte GetMarkType()

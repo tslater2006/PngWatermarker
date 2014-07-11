@@ -7,20 +7,28 @@ using System.Security.Cryptography;
 using System.IO;
 namespace PngWatermarker.Watermarks
 {
+    /// <summary>
+    /// Represents an encrypted watermark.
+    /// </summary>
     public class EncryptedWatermark : Watermark
     {
         public const int TYPE = 09;
 
         public Watermark DecryptedMark;
 
-        protected byte[] cryptedData;
+        protected byte[] cryptedData = null;
         protected byte[] salt;
         protected byte[] key;
 
         private Rfc2898DeriveBytes bytes;
-        private string password;
         private SymmetricAlgorithm algo;
 
+        /// <summary>
+        /// Constructor for an encrypted watermark.
+        /// </summary>
+        /// <param name="mark">The watermark to encrypt.</param>
+        /// <param name="algo">The symmetric aglorithm to use.</param>
+        /// <param name="password">The password which is used to derive the encryption key.</param>
         public EncryptedWatermark(Watermark mark, SymmetricAlgorithm algo, string password)
         {
             if (mark.GetMarkType() == this.GetMarkType())
@@ -59,43 +67,43 @@ namespace PngWatermarker.Watermarks
             cryptedData = ms.ToArray();
         }
 
-        public EncryptedWatermark(SymmetricAlgorithm algo, string password)
+        internal EncryptedWatermark(byte[] cryptedData, byte[] salt)
         {
-            this.password = password;
-            this.algo = algo;
+            this.cryptedData = cryptedData;
+            this.salt = salt;
+            this.algo = Watermarker.DefaultCrypto;
+
         }
 
         internal override byte GetMarkType()
         {
             return TYPE;
         }
-        internal override bool LoadFromBytes(byte[] data)
+
+        /// <summary>
+        /// Method for decrypting an extracted watermark.
+        /// </summary>
+        /// <param name="password">The password that was used during encryption.</param>
+        public void Decrypt(string password)
         {
-            int saltLength = BitConverter.ToInt32(data, 0);
-            byte[] salt = new byte[saltLength];
-            Array.Copy(data, 4, salt, 0, saltLength);
             bytes = new Rfc2898DeriveBytes(password, salt);
 
-            this.salt = salt;
             this.key = bytes.GetBytes(this.algo.KeySize/8);
             algo.Key = key;
-            int cryptedChunkLength = BitConverter.ToInt32(data, 4 + saltLength);
-            byte[] cryptedChunk = new byte[cryptedChunkLength];
-            Array.Copy(data, 4 + saltLength + 4 , cryptedChunk, 0, cryptedChunkLength);
 
-            int ivLength = BitConverter.ToInt32(cryptedChunk, 0);
+            int ivLength = BitConverter.ToInt32(cryptedData, 0);
             byte[] iv = new byte[ivLength];
 
-            Array.Copy(cryptedChunk, 4, iv, 0, ivLength);
+            Array.Copy(cryptedData, 4, iv, 0, ivLength);
             algo.IV = iv;
 
-            int cryptDataLength = BitConverter.ToInt32(cryptedChunk, 4 + ivLength);
+            int cryptDataLength = BitConverter.ToInt32(cryptedData, 4 + ivLength);
 
-            byte[] cryptedData = new byte[cryptDataLength];
+            byte[] cryptedData2 = new byte[cryptDataLength];
 
-            Array.Copy(cryptedChunk, 4 + ivLength + 4, cryptedData, 0, cryptDataLength);
+            Array.Copy(cryptedData, 4 + ivLength + 4, cryptedData2, 0, cryptDataLength);
 
-            byte[] decrypted = Decrypt(cryptedData, algo);
+            byte[] decrypted = Decrypt(cryptedData2, algo);
 
             byte markType = decrypted[0];
             int markDataLength = BitConverter.ToInt32(decrypted,1);
@@ -107,25 +115,37 @@ namespace PngWatermarker.Watermarks
             switch (markType)
             {
                 case 1:
-                    DecryptedMark = new TextWatermark();
+                    DecryptedMark = TextWatermark.LoadFromBytes(markData);
                     break;
                 case 2:
-                    DecryptedMark = new FileWatermark();
+                    DecryptedMark = FileWatermark.LoadFromBytes(markData);
                     break;
                 case 3:
-                    DecryptedMark = new BinaryWatermark();
+                    DecryptedMark = BinaryWatermark.LoadFromBytes(markData);
                     break;
                 case 4:
-                    DecryptedMark = new CompositeWatermark();
+                    DecryptedMark = CompositeWatermark.LoadFromBytes(markData);
                     break;
             }
-
-            DecryptedMark.LoadFromBytes(markData);
-
-            return true;
         }
 
-        public override byte[] GetBytes()
+        internal static EncryptedWatermark LoadFromBytes(byte[] data)
+        {
+            int saltLength = BitConverter.ToInt32(data, 0);
+            byte[] salt = new byte[saltLength];
+            Array.Copy(data, 4, salt, 0, saltLength);
+
+            int cryptedChunkLength = BitConverter.ToInt32(data, 4 + saltLength);
+            byte[] cryptedChunk = new byte[cryptedChunkLength];
+            Array.Copy(data, 4 + saltLength + 4 , cryptedChunk, 0, cryptedChunkLength);
+
+            EncryptedWatermark mark = new EncryptedWatermark(cryptedChunk, salt);
+
+
+            return mark;
+        }
+
+        internal override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
 

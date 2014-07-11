@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 using System.IO;
 namespace PngWatermarker.Watermarks
 {
+    /// <summary>
+    /// A watermark that contains other watermarks.
+    /// </summary>
     public class CompositeWatermark : Watermark
     {
         public const int TYPE = 04;
-        private List<Watermark> watermarks = new List<Watermark>();
+        internal List<Watermark> watermarks = new List<Watermark>();
+        
+        /// <summary>
+        /// gets the list of watermarks contained in this CompositeWatermark.
+        /// </summary>
+        public List<Watermark> Watermarks { get { return watermarks; } }
 
-        public CompositeWatermark()
-        {
-
-        }
         internal override byte GetMarkType()
         {
             return TYPE;
         }
-        public override byte[] GetBytes()
+        internal override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
             ms.WriteByte(TYPE);
@@ -28,8 +32,10 @@ namespace PngWatermarker.Watermarks
             int totalMarksSize = 0;
             foreach(Watermark m in watermarks)
             {
-                marksB.Add(m.GetBytes());
-                totalMarksSize+= marksB[marksB.Count -1].Length;
+                if (m.GetMarkType() != 9) {
+                    marksB.Add(m.GetBytes());
+                    totalMarksSize+= marksB[marksB.Count -1].Length;
+                }
             }
 
             ms.Write(BitConverter.GetBytes(totalMarksSize), 0, 4);
@@ -41,8 +47,10 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        internal override bool LoadFromBytes(byte[] data)
+        internal static CompositeWatermark LoadFromBytes(byte[] data)
         {
+            CompositeWatermark comp = new CompositeWatermark();
+
             MemoryStream ms = new MemoryStream(data);
             byte[] type = new byte[1];
             byte[] dword = new byte[4];
@@ -54,38 +62,29 @@ namespace PngWatermarker.Watermarks
 
                 markData = new byte[BitConverter.ToInt32(dword, 0)];
                 ms.Read(markData, 0, markData.Length);
-                Watermark mark = new BinaryWatermark();
+                Watermark mark = null;
                 switch (type[0])
                 {
                     case 1:
-                        mark = new TextWatermark();
+                        mark = TextWatermark.LoadFromBytes(markData);
                         break;
                     case 2:
-                        mark = new FileWatermark();
+                        mark = FileWatermark.LoadFromBytes(markData);
                         break;
                     case 3:
-                        mark = new BinaryWatermark();
+                        mark = BinaryWatermark.LoadFromBytes(markData);
                         break;
                     case 4:
-                        mark = new CompositeWatermark();
+                        mark = CompositeWatermark.LoadFromBytes(markData);
                         break;
                 }
-                mark.LoadFromBytes(markData);
                 
-                watermarks.Add(mark);
+                comp.watermarks.Add(mark);
             }
-            return true;
+            return comp;
 
         }
-        public int GetWatermarkCount()
-        {
-            return watermarks.Count;
-        }
-
-        public Watermark[] GetWatermarks()
-        {
-            return watermarks.ToArray<Watermark>();
-        }
+        
 
         public void AddWatermark(Watermark mark)
         {

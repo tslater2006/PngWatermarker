@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.IO;
 namespace PngWatermarker.Watermarks
 {
+    /// <summary>
+    /// A watermark representing a file.
+    /// </summary>
     public class FileWatermark : Watermark
     {
         public const int TYPE = 02;
@@ -13,6 +16,10 @@ namespace PngWatermarker.Watermarks
         public byte[] fileData;
         public string extension;
 
+        /// <summary>
+        /// Constructor for a file based watermark.
+        /// </summary>
+        /// <param name="file">The file to load into this watermark.</param>
         public FileWatermark(String file)
         {
             if (File.Exists(file))
@@ -22,11 +29,13 @@ namespace PngWatermarker.Watermarks
             }
         }
 
-        public FileWatermark()
+        internal FileWatermark(byte[] data, string extension)
         {
-
+            this.fileData = data;
+            this.extension = extension;
         }
-        internal override bool LoadFromBytes(byte[] data)
+
+        internal static FileWatermark LoadFromBytes(byte[] data)
         {
             int extLength = BitConverter.ToInt32(data, 0);
             string extension = System.Text.Encoding.UTF8.GetString(data, 4, extLength);
@@ -35,12 +44,9 @@ namespace PngWatermarker.Watermarks
             byte[] fileData = new byte[fileLength];
             Array.Copy(data, 4 + extLength + 4, fileData, 0, fileLength);
 
-            this.fileData = fileData;
-            this.extension = extension;
-
-            return true;
+            return new FileWatermark(fileData, extension);
         }
-        public override byte[] GetBytes()
+        internal override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
             ms.WriteByte(TYPE);
