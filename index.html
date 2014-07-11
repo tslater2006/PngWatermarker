@@ -91,7 +91,7 @@
 
 <blockquote>
 <p>Original Image:
-<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+<img src="images/Flower_Original.png" alt="asdf"></p>
 
 <h3>
 <a name="text-watermark" class="anchor" href="#text-watermark"><span class="octicon octicon-link"></span></a>Text Watermark</h3>
@@ -112,7 +112,7 @@
 
 <blockquote>
 <p>Resulting Image:
-<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+<img src="images/TextMark.png" alt="asdf"></p>
 </blockquote>
 
 <h3>
@@ -141,7 +141,7 @@
 
 <blockquote>
 <p>Resulting Image:
-<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+<img src="images/Flower_Composite.png" alt="asdf"></p>
 </blockquote>
 
 <h3>
@@ -156,8 +156,9 @@
 
 <span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">encrypted</span><span class="p">,</span> <span class="s">"password"</span><span class="p">,</span> <span class="s">"MyOutput.png"</span><span class="p">);</span>
 
-<span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
+<span class="c1">//Extraction</span>
 <span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
+<span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
 
 <span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="n">extract</span><span class="p">,</span> <span class="s">"password"</span><span class="p">);</span>
 
@@ -167,7 +168,7 @@
 
 <blockquote>
 <p>Result:
-<img src="http://daringfireball.net/graphics/logos/" alt="asdf"></p>
+<img src="images/Flower_Crypted.png" alt="asdf"></p>
 </blockquote>
       </section>
     </div>
