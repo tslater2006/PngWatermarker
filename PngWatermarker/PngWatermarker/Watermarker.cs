@@ -15,6 +15,11 @@ namespace PngWatermarker
     public class Watermarker
     {
         /// <summary>
+        /// Crypto Algorithm used for Encrypted Watermarks
+        /// </summary>
+        public static SymmetricAlgorithm DefaultCrypto;
+
+        /// <summary>
         /// Embeds a given watermark into a PNG file and saves the result.
         /// </summary>
         /// <param name="file">PNGFile to use in the watermarking process.</param>
@@ -143,23 +148,47 @@ namespace PngWatermarker
         /// <param name="mark">An empty watermark that will be populated.</param>
         /// <param name="password">Password that was used to embed the watermark.</param>
         /// <returns></returns>
-        public static bool ExtractWatermark(PNGFile file, Watermark mark, string password)
+        public static Watermark ExtractWatermark(PNGFile file, string password)
         {
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
 
             PNGScrambler scrambler = new PNGScrambler(file, bytes.GetBytes(16), bytes.GetBytes(8));
 
             byte[] type = ReadBytes(file, scrambler, 1);
-
-            if (type[0] != mark.GetMarkType()) { return false; }
-
+            byte markType = type[0];
+            if (markType > 9) { return null; }
             byte[] dword = ReadBytes(file, scrambler, 4, 1);
             int length = BitConverter.ToInt32(dword, 0);
+            byte[] data;
+            try
+            {
+                data = ReadBytes(file, scrambler, length, 5);
+            }
+            catch (Exception e) { return null; }
+            
 
-            byte[] data = ReadBytes(file, scrambler, length, 5);
+            Watermark mark = null;
 
-            mark.LoadFromBytes(data);
-            return true;
+            switch(markType)
+            {
+                case 1:
+                    mark = TextWatermark.LoadFromBytes(data);
+                    break;
+                case 2:
+                    mark = FileWatermark.LoadFromBytes(data);
+                    break;
+                case 3:
+                    mark = BinaryWatermark.LoadFromBytes(data);
+                    break;
+                case 4:
+                    mark = CompositeWatermark.LoadFromBytes(data);
+                    break;
+                case 9:
+                    mark = EncryptedWatermark.LoadFromBytes(data);
+                    break;
+            }
+
+            return mark;
 
         }
     }

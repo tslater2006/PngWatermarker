@@ -44,22 +44,18 @@ namespace Tests
         {
             TextWatermark mark = new TextWatermark("This is a test");
 
-            // Length of 19 for 5 byte header and 14 byte string 
-            Expect(mark.GetBytes().Length, Is.EqualTo(19));
 
             Watermarker.EmbedWatermark(file, mark, "password", "results/Scrambling.png");
 
-            TextWatermark extract = new TextWatermark();
+            
             PNGFile file2 = new PNGFile("results/TextMark.png");
 
-            bool result = Watermarker.ExtractWatermark(file2, extract, "password");
+            TextWatermark extracted =(TextWatermark)Watermarker.ExtractWatermark(file2, "password");
+                       
 
-            Expect(result, Is.EqualTo(true));
-                        
+            extracted = (TextWatermark)Watermarker.ExtractWatermark(file2, "foobar");
 
-            result = Watermarker.ExtractWatermark(file2, extract, "foobar");
-
-            Expect(result, Is.EqualTo(false));
+            Expect(extracted, Is.Null);
         }
 
         [Test]
@@ -67,17 +63,11 @@ namespace Tests
         {
             TextWatermark mark = new TextWatermark("This is a test");
 
-            // Length of 19 for 5 byte header and 14 byte string 
-            Expect(mark.GetBytes().Length, Is.EqualTo(19));
-
             Watermarker.EmbedWatermark(file, mark, "password", "results/TextMark.png");
 
-            TextWatermark extract = new TextWatermark();
             PNGFile file2 = new PNGFile("results/TextMark.png");
 
-            bool result = Watermarker.ExtractWatermark(file2, extract, "password");
-
-            Expect(result, Is.EqualTo(true));
+            TextWatermark extract = (TextWatermark)Watermarker.ExtractWatermark(file2, "password");
 
             Expect(extract.Text, Is.EqualTo("This is a test"));
 
@@ -88,17 +78,11 @@ namespace Tests
         {
             BinaryWatermark mark = new BinaryWatermark(new byte[] { 1, 2, 3, 4 });
 
-            // Length of 9 for 5 byte header and 4 byte data 
-            Expect(mark.GetBytes().Length, Is.EqualTo(9));
-
             Watermarker.EmbedWatermark(file, mark, "password", "results/BinaryMark.png");
 
-            BinaryWatermark extract = new BinaryWatermark();
             PNGFile file2 = new PNGFile("results/BinaryMark.png");
 
-            bool result = Watermarker.ExtractWatermark(file2, extract, "password");
-
-            Expect(result, Is.EqualTo(true));
+            BinaryWatermark extract = (BinaryWatermark) Watermarker.ExtractWatermark(file2, "password");
 
             Expect(extract.data, Is.EqualTo(new byte[] { 1, 2, 3, 4 }));
 
@@ -109,17 +93,12 @@ namespace Tests
         {
             FileWatermark mark = new FileWatermark(@"TestFile.txt");
 
-            // Length of  for 5 byte header and 4 byte extension length, 4 byte extension, 4 byte file length, 20 byte file data 
-            Expect(mark.GetBytes().Length, Is.EqualTo(37));
-
             Watermarker.EmbedWatermark(file, mark, "password", "results/FileMark.png");
 
-            FileWatermark extract = new FileWatermark();
+            
             PNGFile file2 = new PNGFile("results/FileMark.png");
 
-            bool result = Watermarker.ExtractWatermark(file2, extract, "password");
-
-            Expect(result, Is.EqualTo(true));
+            FileWatermark extract = (FileWatermark)Watermarker.ExtractWatermark(file2, "password");
 
             Expect(extract.extension, Is.EqualTo(".txt"));
             Expect(extract.fileData, Is.EqualTo(System.Text.Encoding.UTF8.GetBytes("This is a test file!")));
@@ -137,24 +116,23 @@ namespace Tests
 
             comp.AddWatermark(mark1);
             comp.AddWatermark(mark2);
-            Expect(comp.GetWatermarkCount(), Is.EqualTo(2));
+            Expect(comp.Watermarks.Count, Is.EqualTo(2));
 
             // Cannot add encrypted watermarks to a composite
             comp.AddWatermark(enc);
-            Expect(comp.GetWatermarkCount(), Is.EqualTo(2));
+            Expect(comp.Watermarks.Count, Is.EqualTo(2));
 
             Watermarker.EmbedWatermark(file, comp, "password", "results/CompositeMark.png");
 
-            CompositeWatermark extract = new CompositeWatermark();
+            
             PNGFile file2 = new PNGFile("results/CompositeMark.png");
 
-            bool result = Watermarker.ExtractWatermark(file2, extract, "password");
+            CompositeWatermark extract = (CompositeWatermark)Watermarker.ExtractWatermark(file2, "password");
 
-            Expect(result, Is.EqualTo(true));
 
-            Watermark[] marks = extract.GetWatermarks();
+            System.Collections.Generic.List<Watermark> marks = extract.Watermarks;
 
-            Expect(marks.Length, Is.EqualTo(2));
+            Expect(marks.Count, Is.EqualTo(2));
 
             Assert.IsInstanceOf<TextWatermark>(marks[0]);
 
@@ -163,6 +141,7 @@ namespace Tests
             Expect(((TextWatermark)marks[0]).Text, Is.EqualTo("This is mark #1"));
             Expect(((TextWatermark)marks[1]).Text, Is.EqualTo("This is mark #2"));
         }
+        
         [Category("QuickTests")]
         [Test]
         public void TestEncryptedWatermark()
@@ -172,10 +151,11 @@ namespace Tests
 
             Watermarker.EmbedWatermark(file, encrypted, "password", "results/EncryptedMark.png");
 
-            EncryptedWatermark extract = new EncryptedWatermark(aes, "super-secret");
+            
             PNGFile file2 = new PNGFile("results/EncryptedMark.png");
-
-            Watermarker.ExtractWatermark(file2, extract, "password");
+            Watermarker.DefaultCrypto = aes;
+            EncryptedWatermark extract = (EncryptedWatermark)Watermarker.ExtractWatermark(file2, "password");
+            extract.Decrypt("super-secret");
 
             Assert.IsInstanceOf<TextWatermark>(extract.DecryptedMark);
             Expect(((TextWatermark)extract.DecryptedMark).Text, Is.EqualTo("This should be encrypted"));
@@ -195,16 +175,11 @@ namespace Tests
 
             Watermarker.EmbedWatermark(file, text2, "foobar", "results/Embed2Marks.png");
 
-            TextWatermark extract1 = new TextWatermark();
-            TextWatermark extract2 = new TextWatermark();
-
             PNGFile file2 = new PNGFile("results/Embed2Marks.png");
 
-            bool success1 = Watermarker.ExtractWatermark(file2, extract1, "password");
+            TextWatermark extract1 = (TextWatermark)Watermarker.ExtractWatermark(file2, "password");
 
-            bool success2 = Watermarker.ExtractWatermark(file2, extract2, "foobar");
-
-            Expect(success1 && success2, Is.EqualTo(true));
+            TextWatermark extract2 = (TextWatermark)Watermarker.ExtractWatermark(file2, "foobar");
 
             Expect(extract1.Text, Is.EqualTo("text1"));
             Expect(extract2.Text, Is.EqualTo("text2"));
