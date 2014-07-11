@@ -3,6 +3,9 @@
 
 PngWatermarker is a .NET 4.5+ library for the embedding and extraction of invisible watermarks on PNG files.
 
+It makes use of the lovely pngcs library for decoding/encoding of the PNG files, the library was written by Hernán J. González, which is available here: https://code.google.com/p/pngcs/
+
+
 ##Features
 
   - Embed various watermarks into PNG files
