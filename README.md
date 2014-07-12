@@ -41,7 +41,7 @@ Watermarker.EmbedWatermark(file,mark,"password","MyOutput.png");
 //Extraction
 
 file = new PNGFile("MyOutput.png");
-TextWatermark extract = (TextWatermark)Watermarker.ExtractWatermark(file,"password");
+TextWatermark extract = Watermarker.ExtractWatermark<TextWatermark>(file,"password");
 
 ```
 
@@ -62,7 +62,7 @@ Watermarker.EmbedWatermark(file,comp,"password","MyOutput.png");
 //Extraction
 PNGFile file2 = new PNGFile("MyOutput.png");
 
-CompositeWatermark extract = (CompositeWatermark)Watermarker.ExtractWatermark(file2,"password");
+CompositeWatermark extract = Watermarker.ExtractWatermark<CompositeWatermark>(file2,"password");
 Watermark[] marks = extract.GetWatermarks();
 
 ```
@@ -80,10 +80,10 @@ Watermarker.EmbedWatermark(file, encrypted, "password", "MyOutput.png");
 
 PNGFile file2 = new PNGFile("MyOutput.png");
 
-EncryptedWatermark extract = Watermarker.ExtractWatermark(file2, "password");
-extract.Decrypt("super-secret");
+EncryptedWatermark extract = Watermarker.ExtractWatermark<EncryptedWatermark>(file2, "password");
 
-Watermark decrypted = extract.DecryptedMark;
+TextWatermark decrypted = extract.Decrypt<TextWatermark>("super-secret");
+
 ```
 
 ## Original File
