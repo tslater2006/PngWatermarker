@@ -59,6 +59,31 @@ namespace Tests
         }
 
         [Test]
+        public void TestDoubleEncrypt()
+        {
+            EncryptedWatermark.Algorithm = aes;
+
+            TextWatermark mark = new TextWatermark("This will be encrypted twice");
+            EncryptedWatermark enc1 = new EncryptedWatermark(mark, "password1");
+            EncryptedWatermark enc2 = new EncryptedWatermark(enc1, "password2");
+
+            Watermarker.EmbedWatermark(file, enc2, "password", "results/DoubleEncrypt.png");
+
+            PNGFile file2 = new PNGFile("results/DoubleEncrypt.png");
+
+            EncryptedWatermark extract = (EncryptedWatermark)Watermarker.ExtractWatermark(file, "password");
+            extract.Decrypt("password2");
+
+            extract = (EncryptedWatermark)extract.DecryptedMark;
+            extract.Decrypt("password1");
+
+            mark = (TextWatermark)extract.DecryptedMark;
+
+            Expect(mark.Text, Is.EqualTo("This will be encrypted twice"));
+
+        }
+
+        [Test]
         public void TestTextWatermark()
         {
             TextWatermark mark = new TextWatermark("This is a test");
@@ -108,19 +133,20 @@ namespace Tests
         [Test]
         public void TestCompositeWatermark()
         {
+            EncryptedWatermark.Algorithm = aes;
+
             CompositeWatermark comp = new CompositeWatermark();
             TextWatermark mark1 = new TextWatermark("This is mark #1");
             TextWatermark mark2 = new TextWatermark("This is mark #2");
 
-            EncryptedWatermark enc = new EncryptedWatermark(mark1, aes, "supersecret");
+            EncryptedWatermark enc = new EncryptedWatermark(mark1, "supersecret");
 
             comp.AddWatermark(mark1);
             comp.AddWatermark(mark2);
             Expect(comp.Watermarks.Count, Is.EqualTo(2));
 
-            // Cannot add encrypted watermarks to a composite
             comp.AddWatermark(enc);
-            Expect(comp.Watermarks.Count, Is.EqualTo(2));
+            Expect(comp.Watermarks.Count, Is.EqualTo(3));
 
             Watermarker.EmbedWatermark(file, comp, "password", "results/CompositeMark.png");
 
@@ -132,28 +158,35 @@ namespace Tests
 
             System.Collections.Generic.List<Watermark> marks = extract.Watermarks;
 
-            Expect(marks.Count, Is.EqualTo(2));
+            Expect(marks.Count, Is.EqualTo(3));
 
             Assert.IsInstanceOf<TextWatermark>(marks[0]);
 
             Assert.IsInstanceOf<TextWatermark>(marks[1]);
 
+            Assert.IsInstanceOf<EncryptedWatermark>(marks[2]);
+
+            
+            ((EncryptedWatermark)marks[2]).Decrypt("supersecret");
+
             Expect(((TextWatermark)marks[0]).Text, Is.EqualTo("This is mark #1"));
             Expect(((TextWatermark)marks[1]).Text, Is.EqualTo("This is mark #2"));
+            Expect(((TextWatermark)((EncryptedWatermark)marks[2]).DecryptedMark).Text, Is.EqualTo("This is mark #1"));
         }
         
         [Category("QuickTests")]
         [Test]
         public void TestEncryptedWatermark()
         {
+            EncryptedWatermark.Algorithm = aes;
+
             TextWatermark mark = new TextWatermark("This should be encrypted");
-            EncryptedWatermark encrypted = new EncryptedWatermark(mark, aes, "super-secret");
+            EncryptedWatermark encrypted = new EncryptedWatermark(mark, "super-secret");
 
             Watermarker.EmbedWatermark(file, encrypted, "password", "results/EncryptedMark.png");
 
             
             PNGFile file2 = new PNGFile("results/EncryptedMark.png");
-            Watermarker.DefaultCrypto = aes;
             EncryptedWatermark extract = (EncryptedWatermark)Watermarker.ExtractWatermark(file2, "password");
             extract.Decrypt("super-secret");
 

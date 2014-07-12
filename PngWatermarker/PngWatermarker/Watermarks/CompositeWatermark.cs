@@ -32,10 +32,8 @@ namespace PngWatermarker.Watermarks
             int totalMarksSize = 0;
             foreach(Watermark m in watermarks)
             {
-                if (m.GetMarkType() != 9) {
                     marksB.Add(m.GetBytes());
                     totalMarksSize+= marksB[marksB.Count -1].Length;
-                }
             }
 
             ms.Write(BitConverter.GetBytes(totalMarksSize), 0, 4);
@@ -77,6 +75,9 @@ namespace PngWatermarker.Watermarks
                     case 4:
                         mark = CompositeWatermark.LoadFromBytes(markData);
                         break;
+                    case 9:
+                        mark = EncryptedWatermark.LoadFromBytes(markData);
+                        break;
                 }
                 
                 comp.watermarks.Add(mark);
@@ -88,10 +89,7 @@ namespace PngWatermarker.Watermarks
 
         public void AddWatermark(Watermark mark)
         {
-            if (mark.GetMarkType() != 9)
-            {
-                watermarks.Add(mark);
-            }
+            watermarks.Add(mark);
         }
 
         public void RemoveWatermark(Watermark mark)

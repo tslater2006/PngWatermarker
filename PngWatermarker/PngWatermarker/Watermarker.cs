@@ -14,10 +14,6 @@ namespace PngWatermarker
     /// </summary>
     public class Watermarker
     {
-        /// <summary>
-        /// Crypto Algorithm used for Encrypted Watermarks
-        /// </summary>
-        public static SymmetricAlgorithm DefaultCrypto;
 
         /// <summary>
         /// Embeds a given watermark into a PNG file and saves the result.

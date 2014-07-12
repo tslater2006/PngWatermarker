@@ -12,6 +12,10 @@ namespace PngWatermarker.Watermarks
     /// </summary>
     public class EncryptedWatermark : Watermark
     {
+        /// <summary>
+        /// Crypto Algorithm used for Encrypted Watermarks
+        /// </summary>
+        public static SymmetricAlgorithm Algorithm;
         public const int TYPE = 09;
 
         public Watermark DecryptedMark;
@@ -21,36 +25,34 @@ namespace PngWatermarker.Watermarks
         protected byte[] key;
 
         private Rfc2898DeriveBytes bytes;
-        private SymmetricAlgorithm algo;
 
         /// <summary>
         /// Constructor for an encrypted watermark.
         /// </summary>
         /// <param name="mark">The watermark to encrypt.</param>
-        /// <param name="algo">The symmetric aglorithm to use.</param>
         /// <param name="password">The password which is used to derive the encryption key.</param>
-        public EncryptedWatermark(Watermark mark, SymmetricAlgorithm algo, string password)
+        public EncryptedWatermark(Watermark mark, string password)
         {
-            if (mark.GetMarkType() == this.GetMarkType())
+            /*if (mark.GetMarkType() == this.GetMarkType())
             {
                 throw new ArgumentException("You cannot next encrypted watermarks!");
-            }
+            }*/
             // get the base marks bytes
             byte[] markBytes = mark.GetBytes();
 
             bytes = new Rfc2898DeriveBytes(password, 8);
             this.salt = bytes.Salt;
 
-            key = bytes.GetBytes(algo.KeySize / 8);
+            key = bytes.GetBytes(Algorithm.KeySize / 8);
 
-            if (algo.IV == null)
+            if (Algorithm.IV == null)
             {
-                algo.IV = bytes.GetBytes(algo.BlockSize);
+                Algorithm.IV = bytes.GetBytes(Algorithm.BlockSize);
             }
-            algo.Key = key;
-            byte[] iv = algo.IV;
+            Algorithm.Key = key;
+            byte[] iv = Algorithm.IV;
 
-            byte[] cryptData = Encrypt(markBytes, algo);
+            byte[] cryptData = Encrypt(markBytes, Algorithm);
 
             MemoryStream ms = new MemoryStream();
 
@@ -71,7 +73,6 @@ namespace PngWatermarker.Watermarks
         {
             this.cryptedData = cryptedData;
             this.salt = salt;
-            this.algo = Watermarker.DefaultCrypto;
 
         }
 
@@ -88,14 +89,14 @@ namespace PngWatermarker.Watermarks
         {
             bytes = new Rfc2898DeriveBytes(password, salt);
 
-            this.key = bytes.GetBytes(this.algo.KeySize/8);
-            algo.Key = key;
+            this.key = bytes.GetBytes(Algorithm.KeySize/8);
+            Algorithm.Key = key;
 
             int ivLength = BitConverter.ToInt32(cryptedData, 0);
             byte[] iv = new byte[ivLength];
 
             Array.Copy(cryptedData, 4, iv, 0, ivLength);
-            algo.IV = iv;
+            Algorithm.IV = iv;
 
             int cryptDataLength = BitConverter.ToInt32(cryptedData, 4 + ivLength);
 
@@ -103,7 +104,7 @@ namespace PngWatermarker.Watermarks
 
             Array.Copy(cryptedData, 4 + ivLength + 4, cryptedData2, 0, cryptDataLength);
 
-            byte[] decrypted = Decrypt(cryptedData2, algo);
+            byte[] decrypted = Decrypt(cryptedData2, Algorithm);
 
             byte markType = decrypted[0];
             int markDataLength = BitConverter.ToInt32(decrypted,1);
@@ -125,6 +126,9 @@ namespace PngWatermarker.Watermarks
                     break;
                 case 4:
                     DecryptedMark = CompositeWatermark.LoadFromBytes(markData);
+                    break;
+                case 9:
+                    DecryptedMark = EncryptedWatermark.LoadFromBytes(markData);
                     break;
             }
         }
