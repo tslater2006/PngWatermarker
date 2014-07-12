@@ -50,10 +50,10 @@ namespace Tests
             
             PNGFile file2 = new PNGFile("results/TextMark.png");
 
-            TextWatermark extracted =(TextWatermark)Watermarker.ExtractWatermark(file2, "password");
-                       
+            TextWatermark extracted = Watermarker.ExtractWatermark <TextWatermark>(file2, "password");
 
-            extracted = (TextWatermark)Watermarker.ExtractWatermark(file2, "foobar");
+
+            extracted = Watermarker.ExtractWatermark <TextWatermark>(file2, "foobar");
 
             Expect(extracted, Is.Null);
         }
@@ -71,13 +71,11 @@ namespace Tests
 
             PNGFile file2 = new PNGFile("results/DoubleEncrypt.png");
 
-            EncryptedWatermark extract = (EncryptedWatermark)Watermarker.ExtractWatermark(file, "password");
-            extract.Decrypt("password2");
+            EncryptedWatermark extract = Watermarker.ExtractWatermark <EncryptedWatermark>(file, "password");
+            extract = extract.Decrypt<EncryptedWatermark>("password2");
 
-            extract = (EncryptedWatermark)extract.DecryptedMark;
-            extract.Decrypt("password1");
-
-            mark = (TextWatermark)extract.DecryptedMark;
+            
+            mark = extract.Decrypt<TextWatermark>("password1");
 
             Expect(mark.Text, Is.EqualTo("This will be encrypted twice"));
 
@@ -92,7 +90,7 @@ namespace Tests
 
             PNGFile file2 = new PNGFile("results/TextMark.png");
 
-            TextWatermark extract = (TextWatermark)Watermarker.ExtractWatermark(file2, "password");
+            TextWatermark extract = Watermarker.ExtractWatermark<TextWatermark>(file2, "password");
 
             Expect(extract.Text, Is.EqualTo("This is a test"));
 
@@ -167,11 +165,12 @@ namespace Tests
             Assert.IsInstanceOf<EncryptedWatermark>(marks[2]);
 
             
+
             ((EncryptedWatermark)marks[2]).Decrypt("supersecret");
 
             Expect(((TextWatermark)marks[0]).Text, Is.EqualTo("This is mark #1"));
             Expect(((TextWatermark)marks[1]).Text, Is.EqualTo("This is mark #2"));
-            Expect(((TextWatermark)((EncryptedWatermark)marks[2]).DecryptedMark).Text, Is.EqualTo("This is mark #1"));
+            Expect(((EncryptedWatermark)marks[2]).Decrypt<TextWatermark>("supersecret").Text, Is.EqualTo("This is mark #1"));
         }
         
         [Category("QuickTests")]
@@ -188,10 +187,11 @@ namespace Tests
             
             PNGFile file2 = new PNGFile("results/EncryptedMark.png");
             EncryptedWatermark extract = (EncryptedWatermark)Watermarker.ExtractWatermark(file2, "password");
-            extract.Decrypt("super-secret");
+            mark = extract.Decrypt<TextWatermark>("super-secret");
 
-            Assert.IsInstanceOf<TextWatermark>(extract.DecryptedMark);
-            Expect(((TextWatermark)extract.DecryptedMark).Text, Is.EqualTo("This should be encrypted"));
+            Expect(mark, Is.Not.Null);
+
+            Expect(mark.Text, Is.EqualTo("This should be encrypted"));
         }
 
         [Test]

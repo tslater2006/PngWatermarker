@@ -18,8 +18,6 @@ namespace PngWatermarker.Watermarks
         public static SymmetricAlgorithm Algorithm;
         public const int TYPE = 09;
 
-        public Watermark DecryptedMark;
-
         protected byte[] cryptedData = null;
         protected byte[] salt;
         protected byte[] key;
@@ -81,11 +79,26 @@ namespace PngWatermarker.Watermarks
             return TYPE;
         }
 
+        public T Decrypt<T>(string password)
+        {
+            Watermark m = Decrypt(password);
+
+            T retVal = default(T);
+
+            try
+            {
+                retVal = (T)Convert.ChangeType(m, typeof(T));
+            }
+            catch (Exception ex) { }
+
+            return retVal;
+        }
+
         /// <summary>
         /// Method for decrypting an extracted watermark.
         /// </summary>
         /// <param name="password">The password that was used during encryption.</param>
-        public void Decrypt(string password)
+        public Watermark Decrypt(string password)
         {
             bytes = new Rfc2898DeriveBytes(password, salt);
 
@@ -112,25 +125,27 @@ namespace PngWatermarker.Watermarks
             byte[] markData = new byte[markDataLength];
 
             Array.Copy(decrypted, 5, markData, 0, markDataLength);
-
+            Watermark decryptedMark = null;
             switch (markType)
             {
                 case 1:
-                    DecryptedMark = TextWatermark.LoadFromBytes(markData);
+                    decryptedMark = TextWatermark.LoadFromBytes(markData);
                     break;
                 case 2:
-                    DecryptedMark = FileWatermark.LoadFromBytes(markData);
+                    decryptedMark = FileWatermark.LoadFromBytes(markData);
                     break;
                 case 3:
-                    DecryptedMark = BinaryWatermark.LoadFromBytes(markData);
+                    decryptedMark = BinaryWatermark.LoadFromBytes(markData);
                     break;
                 case 4:
-                    DecryptedMark = CompositeWatermark.LoadFromBytes(markData);
+                    decryptedMark = CompositeWatermark.LoadFromBytes(markData);
                     break;
                 case 9:
-                    DecryptedMark = EncryptedWatermark.LoadFromBytes(markData);
+                    decryptedMark = EncryptedWatermark.LoadFromBytes(markData);
                     break;
             }
+
+            return decryptedMark;
         }
 
         internal static EncryptedWatermark LoadFromBytes(byte[] data)

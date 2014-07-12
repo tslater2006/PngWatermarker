@@ -137,6 +137,22 @@ namespace PngWatermarker
            return BitsToBytes(bits);
         }
 
+
+        public static T ExtractWatermark<T>(PNGFile file, string password)
+        {
+            Watermark m = ExtractWatermark(file, password);
+            T converted = default(T);
+
+            try
+            {
+                converted = (T)Convert.ChangeType(m, typeof(T));
+            }
+            catch (Exception ex) { }
+
+            return converted;
+
+        }
+
         /// <summary>
         /// Extracts a stored watermark from a PNGFile.
         /// </summary>
