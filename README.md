@@ -93,4 +93,4 @@ Watermark decrypted = extract.DecryptedMark;
 ![Watermarked File](https://tslater2006.github.io/PngWatermarker/images/TextMark.png)
 
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/588832789e96c4c386c38c99c9cd8bb1 "githalytics.com")](http://githalytics.com/tslater2006/PngWatermarker)
+![githalytics.com alpha](https://cruel-carlota.pagodabox.com/588832789e96c4c386c38c99c9cd8bb1)
