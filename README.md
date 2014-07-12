@@ -1,10 +1,8 @@
 #PngWatermarker 
 
-
 PngWatermarker is a .NET 4.5+ library for the embedding and extraction of invisible watermarks on PNG files.
 
 It makes use of the lovely pngcs library for decoding/encoding of the PNG files, the library was written by Hernán J. González, which is available here: https://code.google.com/p/pngcs/
-
 
 ##Features
 
@@ -74,13 +72,12 @@ Watermark[] marks = extract.GetWatermarks();
 PNGFile file = new PNGFile("MyOriginal.png");
 RijndaelManaged aes = new RijndaelManaged();
 aes.Padding = PaddingMode.Zeroes;
-
+EncryptedWatermark.Algorithm = aes;
 TextWatermark mark = new TextWatermark("This should be encrypted");
-EncryptedWatermark encrypted = new EncryptedWatermark(mark, aes, "super-secret");
+EncryptedWatermark encrypted = new EncryptedWatermark(mark, "super-secret");
 
 Watermarker.EmbedWatermark(file, encrypted, "password", "MyOutput.png");
 
-Watermarker.DefaultCrypto = aes;
 PNGFile file2 = new PNGFile("MyOutput.png");
 
 EncryptedWatermark extract = Watermarker.ExtractWatermark(file2, "password");
@@ -88,3 +85,9 @@ extract.Decrypt("super-secret");
 
 Watermark decrypted = extract.DecryptedMark;
 ```
+
+## Original File
+![Original File](https://tslater2006.github.io/PngWatermarker/images/Flower_Original.png)
+
+## File holding a watermark
+![Watermarked File](https://tslater2006.github.io/PngWatermarker/images/TextMark.png)
