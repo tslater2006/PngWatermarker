@@ -134,13 +134,12 @@
 <div class="highlight highlight-C#"><pre><span class="n">PNGFile</span> <span class="n">file</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOriginal.png"</span><span class="p">);</span>
 <span class="n">RijndaelManaged</span> <span class="n">aes</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RijndaelManaged</span><span class="p">();</span>
 <span class="n">aes</span><span class="p">.</span><span class="n">Padding</span> <span class="p">=</span> <span class="n">PaddingMode</span><span class="p">.</span><span class="n">Zeroes</span><span class="p">;</span>
-
+<span class="n">EncryptedWatermark</span><span class="p">.</span><span class="n">Algorithm</span> <span class="p">=</span> <span class="n">aes</span><span class="p">;</span>
 <span class="n">TextWatermark</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextWatermark</span><span class="p">(</span><span class="s">"This should be encrypted"</span><span class="p">);</span>
-<span class="n">EncryptedWatermark</span> <span class="n">encrypted</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">mark</span><span class="p">,</span> <span class="n">aes</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
+<span class="n">EncryptedWatermark</span> <span class="n">encrypted</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EncryptedWatermark</span><span class="p">(</span><span class="n">mark</span><span class="p">,</span> <span class="s">"super-secret"</span><span class="p">);</span>
 
 <span class="n">Watermarker</span><span class="p">.</span><span class="n">EmbedWatermark</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">encrypted</span><span class="p">,</span> <span class="s">"password"</span><span class="p">,</span> <span class="s">"MyOutput.png"</span><span class="p">);</span>
 
-<span class="n">Watermarker</span><span class="p">.</span><span class="n">DefaultCrypto</span> <span class="p">=</span> <span class="n">aes</span><span class="p">;</span>
 <span class="n">PNGFile</span> <span class="n">file2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PNGFile</span><span class="p">(</span><span class="s">"MyOutput.png"</span><span class="p">);</span>
 
 <span class="n">EncryptedWatermark</span> <span class="n">extract</span> <span class="p">=</span> <span class="n">Watermarker</span><span class="p">.</span><span class="n">ExtractWatermark</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="s">"password"</span><span class="p">);</span>
@@ -152,12 +151,12 @@
 <h2>
 <a name="original-file" class="anchor" href="#original-file"><span class="octicon octicon-link"></span></a>Original File</h2>
 
-<p><img src="images/Flower_Original.png" alt="Original File"></p>
+<p><img src="https://tslater2006.github.io/PngWatermarker/images/Flower_Original.png" alt="Original File"></p>
 
 <h2>
 <a name="file-holding-a-watermark" class="anchor" href="#file-holding-a-watermark"><span class="octicon octicon-link"></span></a>File holding a watermark</h2>
 
-<p><img src="images/TextMark.png" alt="Watermarked File"></p>
+<p><img src="https://tslater2006.github.io/PngWatermarker/images/TextMark.png" alt="Watermarked File"></p>
       </section>
     </div>
 
