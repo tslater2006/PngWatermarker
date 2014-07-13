@@ -42,6 +42,10 @@
     <Compile Include="PNGFile.cs" />
     <Compile Include="PNGScrambler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReedSolomon\GenericGF.cs" />
+    <Compile Include="ReedSolomon\GenericGFPoly.cs" />
+    <Compile Include="ReedSolomon\ReedSolomonDecoder.cs" />
+    <Compile Include="ReedSolomon\ReedSolomonEncoder.cs" />
     <Compile Include="Watermarker.cs" />
     <Compile Include="Watermarks\BinaryWatermark.cs" />
     <Compile Include="Watermarks\CompositeWatermark.cs" />

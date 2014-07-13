@@ -97,6 +97,46 @@ namespace Tests
         }
 
         [Test]
+        public void TestRSTextWatermark()
+        {
+            TextWatermark mark = new TextWatermark("This is a test");
+
+            Watermarker.ReedSolomonProtection = true;
+
+            Watermarker.EmbedWatermark(file, mark, "password", "results/TextMark.png");
+
+            PNGFile file2 = new PNGFile("results/TextMark.png");
+
+            TextWatermark extract = Watermarker.ExtractWatermark<TextWatermark>(file2, "password");
+
+            Expect(extract.Text, Is.EqualTo("This is a test"));
+
+        }
+
+        [Test]
+        public void TestLongRSWatermark()
+        {
+            byte[] data = new byte[300];
+            for (var x = 0; x < 300; x++) { data[x] = (byte)(x % 17); }
+
+            BinaryWatermark binMark = new BinaryWatermark(data);
+
+            Watermarker.ReedSolomonProtection = true;
+
+            Watermarker.EmbedWatermark(file, binMark, "password", "results/LongRS.png");
+
+            PNGFile file2 = new PNGFile("results/LongRS.png");
+
+            BinaryWatermark binMark2 = Watermarker.ExtractWatermark<BinaryWatermark>(file2, "password");
+
+            for(var x = 0; x < binMark2.data.Length; x++)
+            {
+                Expect(binMark2.data[x], Is.EqualTo(binMark.data[x]));
+            }
+
+        }
+
+        [Test]
         public void TestBinaryWatermark()
         {
             BinaryWatermark mark = new BinaryWatermark(new byte[] { 1, 2, 3, 4 });
