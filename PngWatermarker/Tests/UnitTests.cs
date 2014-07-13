@@ -33,6 +33,8 @@ namespace Tests
             {
                 data[x] = 0xFF;
             }
+            //Storage estimates are only valid if ReedSolomon isn't being used.
+            Watermarker.ReedSolomonProtection = false;
 
             Watermarker.EmbedWatermark(file,new BinaryWatermark(data),"password","results/StorageCalc.png");
 
