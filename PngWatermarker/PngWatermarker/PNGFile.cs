@@ -49,6 +49,20 @@ namespace PngWatermarker
             }
         }
         
+        public int EstimatedSolomonReedStorage
+        {
+            get
+            {
+                int pixels = lines.Count * lines[0].Length;
+                //pixels -= 11; // can't count the pixels needed for salt storage
+
+                int totalBits = pixels * 6;
+                int totalBytes = totalBits / 8;
+
+                return (totalBytes - 15) / 2 ; // subtract 5 bytes for watermark header
+            }
+        }
+
         /// <summary>
         /// Main constructor for PNGFile.
         /// </summary>

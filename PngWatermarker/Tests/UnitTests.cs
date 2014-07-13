@@ -40,7 +40,24 @@ namespace Tests
 
             Assert.That(StoreTooMuch, Throws.Exception);
         }
+        [Test]
+        public void TestSRStorageCalculation()
+        {
+            int size = file.EstimatedSolomonReedStorage;
 
+            byte[] data = new byte[size];
+            for (var x = 0; x < size; x++)
+            {
+                data[x] = 0xFF;
+            }
+
+            //Storage estimates are only valid if ReedSolomon isn't being used.
+            Watermarker.ReedSolomonProtection = true;
+
+            Watermarker.EmbedWatermark(file, new BinaryWatermark(data), "password", "results/StorageCalc.png");
+
+            Assert.That(StoreTooMuchSR, Throws.Exception);
+        }
         [Test]
         public void TestScrambling()
         {
@@ -264,6 +281,19 @@ namespace Tests
         private void StoreTooMuch()
         {
             int size = file.EstimatedStorage + 1;
+            byte[] data = new byte[size];
+            for (var x = 0; x < size; x++)
+            {
+                data[x] = 0xFF;
+            }
+
+            Watermarker.EmbedWatermark(file, new BinaryWatermark(data), "password", "results/StorageCalc.png");
+
+        }
+
+        private void StoreTooMuchSR()
+        {
+            int size = file.EstimatedSolomonReedStorage + 1;
             byte[] data = new byte[size];
             for (var x = 0; x < size; x++)
             {
