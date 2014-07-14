@@ -1,0 +1,11 @@
+Thanks to Hernán J. González    hgonzalez@gmail.com - Author of pngcs which is used by this library to decode/encode PNG files
+
+Thanks to ZXINGNET Team - Authors of the ReedSolomon implementation found in this library.
+	Classes:
+		- GenericGF.cs
+		- GenericGFPoly.cs
+		- ReedSolomonDecoder.cs
+		- ReedSolomonEncoder.cs
+	Helper methods:
+		correctErrors(byte[] codewordBytes, int numDataCodewords);
+		makeCodeWords(byte[] dataBytes, int numEcBytesInBlock);

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using ZXing.Common.ReedSolomon;
 
 namespace PngWatermarker
 {
@@ -14,7 +15,7 @@ namespace PngWatermarker
     /// </summary>
     public class Watermarker
     {
-
+        public static bool ReedSolomonProtection = false;
         /// <summary>
         /// Embeds a given watermark into a PNG file and saves the result.
         /// </summary>
@@ -27,10 +28,115 @@ namespace PngWatermarker
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
             
             PNGScrambler scrambler = new PNGScrambler(file, bytes.GetBytes(16), bytes.GetBytes(8));
-            
-            EmbedData(mark.GetBytes(), scrambler);
+
+            byte[] markBytes = mark.GetBytes();
+
+            if (ReedSolomonProtection == false)
+            {
+                EmbedData(markBytes, scrambler);
+            }
+            else
+            {
+                markBytes = EncodeWithReedSolomon(markBytes);
+                EmbedData(markBytes, scrambler);
+            }
 
             file.SaveAs(outputPath);
+        }
+
+        private static byte[] EncodeWithReedSolomon(byte[] markBytes)
+        {
+            MemoryStream msOut = new MemoryStream();
+            MemoryStream msIn = new MemoryStream(markBytes);
+
+            byte[] rsType = null;
+            byte[] rsSize = null;
+
+            int numBlocks = (markBytes.Length / 256) + (markBytes.Length % 256 > 0 ? 1 : 0);
+
+            // encode Type w/ ReedSolomon
+            byte type = (byte)msIn.ReadByte();
+            type |= 0x80;
+
+            rsType = makeCodeWords(new byte[] { type }, 2);
+
+            msOut.Write(rsType,0,rsType.Length);
+
+            // encode Length w/ ReedSolomon
+            byte[] size = new byte[4];
+            msIn.Read(size, 0, 4);
+            rsSize = makeCodeWords(size, 8);
+
+            msOut.Write(rsSize,0,rsSize.Length);
+
+
+            for (var x = 0; x < numBlocks; x++)
+            {
+                int bytesToRead = (int)((msIn.Position + 256 < msIn.Length ? 256 : msIn.Length - msIn.Position));
+                byte[] data = new byte[bytesToRead];
+                msIn.Read(data,0,bytesToRead);
+
+                byte[] rsData = makeCodeWords(data, data.Length);
+
+                msOut.Write(rsData,0,rsData.Length);
+            }
+            
+
+            msOut.Flush();
+            return msOut.ToArray();
+
+        }
+
+        private static byte[] makeCodeWords(byte[] dataBytes, int numEcBytesInBlock)
+        {
+            int numDataBytes = dataBytes.Length;
+            int[] toEncode = new int[numDataBytes + numEcBytesInBlock];
+            for (int i = 0; i < numDataBytes; i++)
+            {
+                toEncode[i] = dataBytes[i] & 0xFF;
+
+            }
+            new ReedSolomonEncoder(GenericGF.QR_CODE_FIELD_256).encode(toEncode, numEcBytesInBlock);
+
+            byte[] byt = new byte[toEncode.Length];
+
+            for (var x = 0; x < byt.Length; x++)
+            {
+                byt[x] = (byte)(toEncode[x] & 0xFF);
+            }
+
+            return byt;
+        }
+
+
+        private static byte[] correctErrors(byte[] codewordBytes, int numDataCodewords)
+        {
+            ReedSolomonDecoder rsDecoder = new ReedSolomonDecoder(GenericGF.QR_CODE_FIELD_256);
+
+            int numCodewords = codewordBytes.Length;
+            // First read into an array of ints
+            int[] codewordsInts = new int[numCodewords];
+            for (int i = 0; i < numCodewords; i++)
+            {
+                codewordsInts[i] = codewordBytes[i] & 0xFF;
+            }
+            int numECCodewords = codewordBytes.Length - numDataCodewords;
+
+            if (!rsDecoder.decode(codewordsInts, numECCodewords))
+                return new byte[] { 0 };
+
+            // Copy back into array of bytes -- only need to worry about the bytes that were data
+            // We don't care about errors in the error-correction codewords
+            byte[] fixedData = new byte[numDataCodewords];
+
+            for (int i = 0; i < numDataCodewords; i++)
+            {
+                fixedData[i] = (byte)codewordsInts[i];
+            }
+
+
+
+            return fixedData;
         }
 
         private static void EmbedData(byte[] data, PNGScrambler scrambler)
@@ -165,19 +271,60 @@ namespace PngWatermarker
             Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, new byte[] { 112, 52, 63, 42, 180, 121, 53, 27 }, 1000);
 
             PNGScrambler scrambler = new PNGScrambler(file, bytes.GetBytes(16), bytes.GetBytes(8));
-
-            byte[] type = ReadBytes(file, scrambler, 1);
-            byte markType = type[0];
-            if (markType > 9) { return null; }
-            byte[] dword = ReadBytes(file, scrambler, 4, 1);
-            int length = BitConverter.ToInt32(dword, 0);
-            byte[] data;
-            try
+            byte[] data = null;
+            byte markType;
+            if (ReedSolomonProtection == false)
             {
-                data = ReadBytes(file, scrambler, length, 5);
+                byte[] type = ReadBytes(file, scrambler, 1);
+                markType= type[0];
+
+                if (markType > 9) { return null; }
+                byte[] dword = ReadBytes(file, scrambler, 4, 1);
+                int length = BitConverter.ToInt32(dword, 0);
+
+                try
+                {
+                    data = ReadBytes(file, scrambler, length, 5);
+                }
+                catch (Exception e) { return null; }
             }
-            catch (Exception e) { return null; }
-            
+            else
+            {
+                byte[] rsType = ReadBytes(file, scrambler, 3, 0);
+                byte[] type = correctErrors(rsType, 1);
+                markType = type[0];
+                if ((markType & 0x80) != 0x80) { return null; }
+                markType ^= 0x80;
+
+                byte[] rsLength = ReadBytes(file, scrambler, 12, 3);
+                byte[] length = correctErrors(rsLength, 4);
+                int markLength = BitConverter.ToInt32(length,0);
+
+                int position = 0;
+                int numBlocks = (markLength / 256) + (markLength % 256 > 0 ? 1 : 0);
+
+                MemoryStream msOut = new MemoryStream();
+
+                while (numBlocks > 0)
+                {
+                    int bytesInBlock = (markLength - (position / 2) < 256 ? markLength - (position / 2) : 256);
+
+                    bytesInBlock *= 2;
+
+                    byte[] codeBytes = ReadBytes(file, scrambler, bytesInBlock, position + 15);
+
+                    byte[] fixedData = correctErrors(codeBytes, bytesInBlock / 2);
+
+                    msOut.Write(fixedData, 0, fixedData.Length);
+                    numBlocks--;
+                    position += bytesInBlock;
+
+                    
+                }
+
+                data = msOut.ToArray();
+
+            }
 
             Watermark mark = null;
 
