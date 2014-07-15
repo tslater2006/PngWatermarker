@@ -30,7 +30,7 @@ namespace pngw
         {
             //bool goodArgs = parseArgs(new string[]{"-m=EMBED", "-i=TestImage.png", "-o=Output.png", "-p=password", "-t=Hello", "-t=World", "-f=TestFile.txt", "-f=TestFile.txt", "-b=03,2A,4C,BD", "-e", "-a=AES", "-k=supersecret"});
             //bool goodArgs = parseArgs(new string[] { "-m=EXTRACT","-c","-i=Output.png", "-p=password", "-t=Hello", "-t=World", "-f=TestFile.txt", "-f=TestFile.txt", "-b=03,2A,4C,BD", "-e", "-a=AES", "-k=supersecret" });
-            bool goodArgs = parseArgs(new string[] { "-m=EXTRACT", "-i=Output.png", "-o=.","-p=password", "-t=Hello", "-t=World", "-f=TestFile.txt", "-f=TestFile.txt", "-b=03,2A,4C,BD", "-e", "-a=AES", "-k=supersecret" });
+            bool goodArgs = parseArgs(args);
             if (goodArgs)
             {
                 Watermarker.ReedSolomonProtection = ReedSolomon;
@@ -177,31 +177,31 @@ namespace pngw
             }
 
             // no mode
-            if (Mode == null || ((Mode.Equals("EMBED") || Mode.Equals("EXTRACT")) == false))
+            else if (Mode == null || ((Mode.Equals("EMBED") || Mode.Equals("EXTRACT")) == false))
             {
                 badArgs=true;
             }
 
             // no input file, or mode is EMBED and no output file, or no password
-            if (InputFile == null || (Mode.Equals("EMBED") && OutputFile == null) || Password == null)
+            else if (InputFile == null || (Mode.Equals("EMBED") && OutputFile == null) || Password == null)
             {    
                 badArgs = true;
             }
 
             // Encrypt is a yes but either missing algorithm or key
-            if (Encrypt && (Algorithm == null || EncKey == null))
+            else if (Encrypt && (Algorithm == null || EncKey == null))
             {
                 badArgs = true;
             }
 
             // Mode is EMBED but no marks were specified
-            if (Mode.Equals("EMBED") && marks.Count == 0)
+            else if (Mode.Equals("EMBED") && marks.Count == 0)
             {
                 badArgs = true;
             }
 
             // Mode is extract, they dont want console only output, but didn't specify a directory to store marks.
-            if (Mode.Equals("EXTRACT") && OutputFile == null && (OnlyConsole == false))
+            else if (Mode.Equals("EXTRACT") && OutputFile == null && (OnlyConsole == false))
             {
                 badArgs = true;
             }
