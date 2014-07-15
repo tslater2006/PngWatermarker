@@ -71,7 +71,7 @@ namespace PngWatermarker.Watermarks
             return ms.ToArray();
         }
 
-        public void Save(string output)
+        public override void Save(string output)
         {
             if (File.Exists(output))
             {
@@ -85,6 +85,25 @@ namespace PngWatermarker.Watermarks
         internal override byte GetMarkType()
         {
             return TYPE;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("FileWatermark: ");
+            sb.AppendLine(String.Format("\tExtension: {0}", extension));
+            sb.AppendLine(String.Format("\tSize: {0}", fileData.Length));
+            sb.Append("\tData: ");
+            if (fileData.Length <= 20)
+            {
+                sb.AppendLine(BitConverter.ToString(fileData));
+            }
+            else
+            {
+                sb.AppendLine("Too Long to Display");
+            }
+
+            return sb.ToString();
         }
     }
 }

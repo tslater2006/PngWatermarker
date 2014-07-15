@@ -79,6 +79,11 @@ namespace PngWatermarker.Watermarks
             return TYPE;
         }
 
+        public override void Save(string path)
+        {
+            
+        }
+
         public T Decrypt<T>(string password)
         {
             Watermark m = Decrypt(password);

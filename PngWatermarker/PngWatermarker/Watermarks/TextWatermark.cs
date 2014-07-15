@@ -48,5 +48,25 @@ namespace PngWatermarker.Watermarks
         {
             return TYPE;
         }
+
+        public override void Save(string output)
+        {
+            if (File.Exists(output))
+            {
+                File.Delete(output);
+            }
+
+            File.WriteAllText(output,Text);
+
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("TextWatermark: ");
+            sb.AppendLine(String.Format("\tContents: \"{0}\"",Text));
+
+            return sb.ToString();
+        }
     }
 }

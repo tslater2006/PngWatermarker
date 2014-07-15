@@ -10,5 +10,7 @@ namespace PngWatermarker.Watermarks
     {
         internal abstract byte[] GetBytes();
         internal abstract byte GetMarkType();
+
+        public abstract void Save(string path);
     }
 }

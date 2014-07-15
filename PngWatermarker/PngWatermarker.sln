@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hjg.Pngcs", "..\external\pn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DE5F03D9-00E9-4E0C-A349-EAAA5BD4B8B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "CLI\CLI.csproj", "{636A83F8-E9F2-45CE-ADB5-A88ABE7885E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pngw", "pngw\pngw.csproj", "{636A83F8-E9F2-45CE-ADB5-A88ABE7885E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

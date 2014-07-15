@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommandLine;
-namespace CLI
+namespace pngw
 {
     class Options
     {
-        [Option('i', "input", Required = true, HelpText = "Input file.")]
+        /*[Option('i', "input", Required = true, HelpText = "Input file.")]
         public string InputFile { get; set; }
 
         [Option('o', "output", Required = true, HelpText = "Output file.")]
@@ -20,7 +19,7 @@ namespace CLI
         [Option('e',"encrypt",Required=false, HelpText= "Enable Encryption, if this is selected you MUST provide a value for -k/--key.")]
         public bool Encrypt { get; set; }
 
-        [Option('a',"algo",Required=true,HelpText="Symmetric Algorithm to use, valid options are AES")]
+        [Option('a',"algo",Required=false,HelpText="Symmetric Algorithm to use, valid options are AES")]
         public string Algorithm {get;set;}
         [Option('k',"key", Required= false,HelpText = "Encryption Key.")]
         public string EncKey { get; set; }
@@ -36,5 +35,6 @@ namespace CLI
 
         [OptionArray('b', "binary", HelpText = "Binary watermark(s), each one should be formatted like {34,AE,2F,4B} and should be seperated by a space.")]
         public string[] BinaryMarks { get; set; }
+        */
     }
 }

@@ -23,6 +23,7 @@ namespace PngWatermarker.Watermarks
         {
             return TYPE;
         }
+
         internal override byte[] GetBytes()
         {
             MemoryStream ms = new MemoryStream();
@@ -85,7 +86,10 @@ namespace PngWatermarker.Watermarks
             return comp;
 
         }
-        
+        public override void Save(string path)
+        {
+            
+        }
 
         public void AddWatermark(Watermark mark)
         {

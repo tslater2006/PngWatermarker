@@ -52,9 +52,37 @@ namespace PngWatermarker.Watermarks
             return new BinaryWatermark(data);
         }
 
+        public override void Save(string output)
+        {
+            if (File.Exists(output))
+            {
+                File.Delete(output);
+            }
+
+            File.WriteAllBytes(output, data);
+
+        }
+
         internal override byte GetMarkType()
         {
             return TYPE;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("BinaryWatermark: ");
+            sb.AppendLine(String.Format("\tSize: {0}", data.Length));
+            sb.Append("\tData: ");
+            if (data.Length <= 20)
+            {
+                sb.AppendLine(BitConverter.ToString(data));
+            }
+            else
+            {
+                sb.AppendLine("Too Long to Display");
+            }
+            return sb.ToString();
         }
     }
 }
